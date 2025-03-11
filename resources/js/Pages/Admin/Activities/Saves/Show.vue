@@ -250,29 +250,32 @@ const formData = ref({
 import Swal from 'sweetalert2';
 
 const handleSubmit = () => {
-  if (!form.hours && form.result != 4) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'กรุณาระบุจำนวนชั่วโมง',
-      showConfirmButton: true,
-      confirmButtonText: 'ตกลง', 
-    });
-    showCheck.value = false;
-    return;
-  }
+if (!form.hours && form.result != 4) {
+  Swal.fire({
+    icon: 'warning',
+    title: 'กรุณาระบุจำนวนชั่วโมง',
+    showConfirmButton: true,
+    confirmButtonText: 'ตกลง',
+    confirmButtonColor: '#FF6347' // ✅ เพิ่มสีปุ่มที่นี่
+  }).then(() => {
+    showCheck.value = true;
+  });
+  return;
+}
 
-  if (form.result && form.result == 4 && form.suggestions != 4) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'กรุณาระบุข้อเสนอแนะ',
-      showConfirmButton: true,
-      confirmButtonText: 'ตกลง',
-      confirmButtonColor: '#FF6347',
-    }).then(() => {
-      showCheck.value = false; // เปลี่ยนค่า showCheck.value ที่นี่
-    });
-    return;
-  }
+if (form.result && form.result == 4 && form.suggestions != 4) {
+  Swal.fire({
+    icon: 'warning',
+    title: 'กรุณาระบุข้อเสนอแนะ',
+    showConfirmButton: true,
+    confirmButtonText: 'ตกลง',
+    confirmButtonColor: '#FF6347' // ✅ สีปุ่มนี้จะทำงานได้แน่นอน
+  }).then(() => {
+    showCheck.value = true;
+  });
+  return;
+}
+
 
 
   form.put(route('activity_saves.updatecheck', { save: props.save.id }), {
