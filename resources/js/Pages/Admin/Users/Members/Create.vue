@@ -83,7 +83,9 @@ function submit() {
         form.reset();
       });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Error:', error);  // เพิ่มการ log ข้อผิดพลาดลงใน console
+
       Swal.fire({
         title: 'เกิดข้อผิดพลาด!',
         text: 'ไม่สามารถเพิ่มข้อมูลได้',
@@ -91,10 +93,10 @@ function submit() {
         confirmButtonText: 'ตกลง',
         confirmButtonColor: '#d33', // สีแดง
       });
-
     }
   });
 }
+
 </script>
 
 <template>

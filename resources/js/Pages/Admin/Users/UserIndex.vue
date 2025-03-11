@@ -230,7 +230,9 @@ const totalPages = computed(() => {
             </TableDataCell>
             <TableDataCell class="whitespace-nowrap">{{ user.name }}</TableDataCell>
             <TableDataCell class="whitespace-nowrap">
-              {{ user.student_code ?? user.officer_code ?? '-' }}
+            <pre>{{user.officer_code}}</pre>
+              <!-- {{ user.student_code ?? user.officer_code ?? '-' }} -->
+              {{ user.id_card || '-' }}
             </TableDataCell>
 
             <TableDataCell class="whitespace-nowrap">
