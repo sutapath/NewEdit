@@ -3,7 +3,8 @@ echo "Deploy script running..."
 
 # ✅ ติดตั้ง PHP และ Composer ก่อน
 echo "Installing PHP..."
-apt-get update && apt-get install -y php-cli unzip curl
+apt-get update && apt-get install -y php-cli
+
 
 echo "Installing Composer..."
 curl -sS https://getcomposer.org/installer | php
