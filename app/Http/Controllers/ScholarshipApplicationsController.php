@@ -28,8 +28,6 @@ class ScholarshipApplicationsController extends Controller
     public function scholarstudents()
     {
         $scholarships = Scholarship::all();
-
-        // ดึงข้อมูลการสมัครเรียนที่มีผลสัมฤทธิ์การสัมภาษณ์
         $applications = ScholarshipApplication::with(['scholarship'])
             ->where('Interview_results', 1)
             ->get()
