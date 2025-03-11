@@ -111,7 +111,7 @@ const closeLoginModal = () => {
       </div>
     </div>
   </section> 
-<section v-if="scholarships.length === 0" class="text-gray-700 body-font border-t border-gray-200">
+<section v-if="scholarships.length !== 0" class="text-gray-700 body-font border-t border-gray-200">
   <div class="container px-5 py-12 mx-auto">
     <div class="flex flex-col text-center w-full mb-20">
       <h2 class="text-xs text-indigo-500 tracking-widest font-medium title-font mb-1">ข้อมูลทุนการศึกษา</h2>
