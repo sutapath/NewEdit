@@ -3,7 +3,7 @@
   <Head title="Activity Index" />
   <AuthenticatedLayout>
 
-    <div class="max-w-7xl mx-auto mb-3  py-4 mt-20 px-10">
+    <div class="w-full max-w-7xl mx-auto mb-3  py-4 mt-20 px-10">
 
       <div class="flex justify-between items-center">
         <div class=" py-2 mr-3  text-gray-800 rounded-t-lg text-xl font-bold">
@@ -40,9 +40,10 @@
             <TableDataCell>{{ activity.location }}</TableDataCell>
             <TableDataCell>{{ activity.description }}</TableDataCell>
 
-            <!-- ไม่แสดง limits เมื่อ id = 1 -->
-            <TableDataCell v-if="activity.id !== 1">{{ activity.limits }}</TableDataCell>
-            <TableDataCell v-else> </TableDataCell>
+          <TableDataCell v-if="activity.id !== 1">
+  {{ activity.limits }}
+</TableDataCell>
+<TableDataCell v-else></TableDataCell>
 
             <TableDataCell>
               <div class="flex space-x-2">
