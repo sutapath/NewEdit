@@ -3,7 +3,7 @@
   <Head title="Activity Index" />
   <AuthenticatedLayout>
 
-    <div class="w-full max-w-7xl mx-auto mb-3  py-4 mt-20 px-10">
+    <div class="max-w-7xl mx-auto mb-3  py-4 mt-20 px-10">
 
       <div class="flex justify-between items-center">
         <div class=" py-2 mr-3  text-gray-800 rounded-t-lg text-xl font-bold">
@@ -20,55 +20,54 @@
       </div>
 
       <!-- ตารางการแสดงผลกิจกรรม -->
-      <Table class="w-full mt-4 max-w-7xl ">
-        <thead>
-          <TableRow>
-            <TableHeaderCell>ลำดับ</TableHeaderCell>
-            <TableHeaderCell>ชื่อกิจกรรม</TableHeaderCell>
-            <TableHeaderCell>วันที่จัดกิจกรรม</TableHeaderCell>
-            <TableHeaderCell>สถานที่จัด</TableHeaderCell>
-            <TableHeaderCell>คำอธิบาย</TableHeaderCell>
-            <TableHeaderCell>จำนวนผู้เข้าร่วม</TableHeaderCell>
-            <TableHeaderCell>จัดการ</TableHeaderCell>
-          </TableRow>
-        </thead>
-        <tbody>
-          <TableRow v-for="(activity, index) in sortedActivities" :key="activity.id">
-            <TableDataCell>{{ index + 1 }}</TableDataCell>
-            <TableDataCell>{{ activity.activity_name }}</TableDataCell>
-            <TableDataCell>{{ formatDate(activity.start_date) }}</TableDataCell>
-            <TableDataCell>{{ activity.location }}</TableDataCell>
-            <TableDataCell>{{ activity.description }}</TableDataCell>
+      <Table class="w-full mt-4 max-w-7xl">
+  <thead>
+    <TableRow>
+      <TableHeaderCell class="w-16 text-center">ลำดับ</TableHeaderCell>
+      <TableHeaderCell class="w-1/4">ชื่อกิจกรรม</TableHeaderCell>
+      <TableHeaderCell class="w-1/4">วันที่จัดกิจกรรม</TableHeaderCell>
+      <TableHeaderCell class="w-1/6">สถานที่จัด</TableHeaderCell>
+      <TableHeaderCell class="w-1/6">คำอธิบาย</TableHeaderCell>
+      <TableHeaderCell class="w-1/4 text-center">จำนวนผู้เข้าร่วม</TableHeaderCell>
+      <TableHeaderCell class="w-32 text-center">จัดการ</TableHeaderCell>
+    </TableRow>
+  </thead>
+  <tbody>
+    <TableRow v-for="(activity, index) in sortedActivities" :key="activity.id">
+      <TableDataCell class="text-center">{{ index + 1 }}</TableDataCell>
+      <TableDataCell>{{ activity.activity_name }}</TableDataCell>
+      <TableDataCell>{{ formatDate(activity.start_date) }}</TableDataCell>
+      <TableDataCell>{{ activity.location }}</TableDataCell>
+      <TableDataCell>{{ activity.description }}</TableDataCell>
 
-          <TableDataCell v-if="activity.id !== 1">
-  {{ activity.limits }}
-</TableDataCell>
-<TableDataCell v-else></TableDataCell>
+      <TableDataCell v-if="activity.id !== 1" class="text-center">{{ activity.limits }}</TableDataCell>
+      <TableDataCell v-else class="text-center">-</TableDataCell>
 
-            <TableDataCell>
-              <div class="flex space-x-2">
-                <template v-if="hasRole('admin') || hasRole('officer')">
-                  <button @click="() => $inertia.get(route('activities.edit', activity.id))"
-                    class="custom-button-warning">
-                    แก้ไข
-                  </button>
-                </template>
-                <template v-if="hasRole('scholar') || hasRole('intlscholar')">
-                  <Link :href="route('activity_registrations.create', { activity_id: activity.id })"
-                    class="custom-button-primary">
-                  ลงชื่อ
-                  </Link>
-                </template>
-                <template v-if="hasRole('admin') || hasRole('officer')">
-                  <button @click="confirmDeleteActivity(activity.id)" class="custom-button-danger">
-                    ลบ
-                  </button>
-                </template>
-              </div>
-            </TableDataCell>
-          </TableRow>
-        </tbody>
-      </Table>
+      <TableDataCell class="text-center">
+        <div class="flex justify-center space-x-2">
+          <template v-if="hasRole('admin') || hasRole('officer')">
+            <button @click="() => $inertia.get(route('activities.edit', activity.id))"
+              class="custom-button-warning">
+              แก้ไข
+            </button>
+          </template>
+          <template v-if="hasRole('scholar') || hasRole('intlscholar')">
+            <Link :href="route('activity_registrations.create', { activity_id: activity.id })"
+              class="custom-button-primary">
+              ลงชื่อ
+            </Link>
+          </template>
+          <template v-if="hasRole('admin') || hasRole('officer')">
+            <button @click="confirmDeleteActivity(activity.id)" class="custom-button-danger">
+              ลบ
+            </button>
+          </template>
+        </div>
+      </TableDataCell>
+    </TableRow>
+  </tbody>
+</Table>
+
       <div class="flex justify-end items-center w-full mt-4 space-x-4">
         <!-- Dropdown สำหรับเลือกจำนวนข้อมูลต่อหน้า -->
         <div class="flex items-center">
