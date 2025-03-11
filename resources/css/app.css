@@ -1,0 +1,211 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+* {
+	font-family: "Athiti", sans-serif;
+  }
+  .custom-button-dark {
+  
+	padding: 0.3rem 0.5rem;
+	border-radius: 0.4rem;
+	color: rgb(255, 255, 255);
+	background-color: 	#2f2e2e;
+  }
+  
+  .custom-button-dark:hover {	
+	background-color: #2f2e2e;
+	color: rgb(255, 255, 255);
+  }
+
+/* กำหนดขนาดและสีของ scrollbar */
+::-webkit-scrollbar {
+  width: 16px;  /* กำหนดความกว้างของ scrollbar (ใหญ่ขึ้น) */
+  height: 16px; /* กำหนดความสูงสำหรับ horizontal scrollbar */
+}
+
+/* กำหนดลักษณะของ scrollbar เมื่อไม่ได้ถูกใช้งาน */
+::-webkit-scrollbar-thumb {
+  background-color: #4B5563; /* สีเทา 800 */
+  border-radius: 8px; /* มุมโค้งมน */
+  border: 4px solid #fff; /* กรอบขาวรอบๆ thumb */
+}
+
+/* กำหนดลักษณะของ scrollbar เมื่อมันถูก hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #374151; /* สีเทาเข้มกว่าเมื่อ hover */
+}
+
+/* กำหนดลักษณะของ scrollbar track */
+::-webkit-scrollbar-track {
+  background-color: #f3f4f6; /* สีพื้นหลังของ track */
+  border-radius: 8px; /* มุมโค้งมน */
+}
+
+  .custom-button-light {
+  
+	padding: 0.3rem 0.5rem;
+	border-radius: 0.4rem;
+	color:#2f2e2e;
+	background-color: 	 rgb(255, 255, 255);
+  }
+  
+  .custom-button-light:hover {	
+	background-color: rgb(255, 255, 255); 
+	color:#2f2e2e;
+  }
+
+  .custom-button-danger {
+	padding: 0.3rem 0.5rem;
+	border-radius: 0.4rem;
+	color: rgb(255, 255, 255);
+	background-color: #FA5F55;
+	border: 2px solid #FA5F55; /* เพิ่มขอบ */
+  }
+  
+  .custom-button-danger:hover {
+	background-color: #ffffff;
+	color: rgb(241, 9, 9);
+	border-color: rgb(241, 9, 9); /* เปลี่ยนสีขอบเมื่อ hover */
+  }
+  
+
+  .custom-button-success {
+	padding: 0.3rem 0.5rem;
+	border-radius: 0.4rem;
+	color: rgb(0, 0, 0);
+	background-color: #9ED89E;
+	border: 2px solid #9ED89E; /* เพิ่มขอบ */
+  }
+  
+  .custom-button-success:hover {
+	background-color: #ffffff; /* เปลี่ยนพื้นหลังเป็นสีขาวเมื่อ hover */
+	color: rgb(0, 0, 0);
+	border-color: #5b8d5b; /* เปลี่ยนสีขอบเมื่อ hover */
+  }
+  
+
+  .custom-button-success-outline {
+	padding: 0.3rem 0.5rem;
+	border-radius: 0.4rem;
+	color: #246824; /* สีข้อความ */
+	background-color: transparent; /* พื้นหลังโปร่งใส */
+	border: 2px solid #9ED89E; /* ขอบ */
+  }
+  
+  .custom-button-success-outline:hover {
+	background-color: #9ED89E; /* เปลี่ยนพื้นหลังเมื่อ hover */
+	color: rgb(255, 255, 255); /* เปลี่ยนสีข้อความเมื่อ hover */
+  }
+  
+
+  .custom-button-primary {
+	padding: 0.3rem 0.5rem;
+	border-radius: 0.4rem;
+	color: rgb(255, 255, 255);
+	background-color: #0096FF;
+	border: 2px solid transparent; /* กำหนดขอบเริ่มต้น */
+  }
+  
+  .custom-button-primary:hover {
+	background-color: #ffffff;
+	color: #0096FF;
+	border-color: #0096FF; /* เปลี่ยนสีขอบเมื่อ hover */
+  }
+  
+
+  .custom-button-disabled {
+  
+	padding: 0.3rem 0.5rem;
+	border-radius: 0.4rem;
+	color: rgb(0, 0, 0);
+
+	background-color: #b8c4c8;
+  }
+  
+
+
+  .custom-button-warning {
+	padding: 0.3rem 0.5rem;
+	border-radius: 0.4rem;
+	color: rgb(0, 0, 0);
+	background-color: #ffeca8;
+	border: 2px solid #ffeca8; /* เพิ่มขอบ */
+  }
+  
+  .custom-button-warning:hover {
+	background-color: #ffffff; /* เปลี่ยนพื้นหลังเป็นสีขาวเมื่อ hover */
+	color: rgb(0, 0, 0);
+	border-color: rgb(233, 184, 136); /* เปลี่ยนสีขอบเมื่อ hover */
+  }
+  
+  
+  .athiti-extralight {
+	font-family: "Athiti", sans-serif;
+	font-weight: 200;
+	font-style: normal;
+  }
+  
+  .custom-button-gray {
+  
+	padding: 0.3rem 0.5rem;
+	border-radius: 0.4rem;
+	color: rgb(255, 255, 255);
+
+	background-color:#3a3a38;
+  }
+  
+  .custom-button-gray:hover {
+	background-color:#3a3a38;
+
+	color: rgb(255, 255, 255);
+  }.athiti-extralight {
+	font-family: "Athiti", sans-serif;
+	font-weight: 200;
+	font-style: normal;
+  }
+
+
+
+  .athiti-light {
+	font-family: "Athiti", sans-serif;
+	font-weight: 300;
+	font-style: normal;
+  }
+  
+  .athiti-regular {
+	font-family: "Athiti", sans-serif;
+	font-weight: 400;
+	font-style: normal;
+  }
+  
+  .athiti-medium {
+	font-family: "Athiti", sans-serif;
+	font-weight: 500;
+	font-style: normal;
+  }
+  
+  .athiti-semibold {
+	font-family: "Athiti", sans-serif;
+	font-weight: 600;
+	font-style: normal;
+  }
+  
+  .athiti-bold {
+	font-family: "Athiti", sans-serif;
+	font-weight: 700;
+	font-style: normal;
+  }
+  
+  .bg-admin {
+	background-color: #f4f1ff; /* สีพื้นหลังสำหรับแถวที่มีบทบาท Admin */
+  }
+  
+  .bg-officer {
+	background-color:#e8f4ea; /* สีพื้นหลังสำหรับแถวที่มีบทบาท Officer */
+  }
+ 
+  
+  .text-no-role {
+	color: #ff0000; /* สีตัวอักษรแดงสำหรับแถวที่ไม่มีบทบาท */
+  }
+  
