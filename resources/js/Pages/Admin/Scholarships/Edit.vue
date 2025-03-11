@@ -15,12 +15,11 @@
                             <PrimaryButton 
                                 @click="submit"
                                 class="custom-button-success ml-4"
-                :class="{ 'opacity-25': form.processing }"
-                :disabled="form.processing"
-            >
-                <span v-if="form.processing">กำลังโหลด...</span>
-                <span v-else> บันทึก</span>
-               
+                                :class="{ 'opacity-25': form.processing }"
+                                :disabled="form.processing"
+                            >
+                                <span v-if="form.processing">กำลังโหลด...</span>
+                                <span v-else> บันทึก</span>
                             </PrimaryButton>
                         </div>
                     </div>
@@ -96,11 +95,11 @@
                         </div>
                         <div>
                             <InputLabel for="file" value="ไฟล์" />
-                            <input
+                            <TextInput
                                 id="file"
                                 type="file"
                                 class="mt-1 block w-full py-1 px-2"
-                                @change="handleFileChange"
+                                @change="handleFileChange($event, 'file')"
                             />
                             <span v-if="errorMessages.file" class="text-red-600">{{ errorMessages.file }}</span>
                         </div>
@@ -128,6 +127,7 @@
         </div>
     </AuthenticatedLayout>
 </template>
+
 <script setup>
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
@@ -164,72 +164,58 @@ const form = useForm({
   file: null,
 });
 
-// แสดงไฟล์เดิมถ้ามี
-const file = ref(props.scholarship.file ? `/storage/files/${props.scholarship.file}` : null);
-// // ตรวจสอบว่า due_date เลยวันปัจจุบันหรือยัง
-// const checkStatus = () => {
-//   const currentDate = new Date();
-//   const dueDate = new Date(form.due_date);
-
-//   // เปลี่ยนสถานะเป็น 0 ถ้าวันปัจจุบันเลย due_date
-//   if (currentDate > dueDate) {
-//     form.status = 0;
-//   }
-// };
-const submit = () => {
-  validateForm();
-  if (Object.values(errorMessages.value).some(error => error)) {
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("scholar_name", form.scholar_name);
-  formData.append("type", form.type);
-  formData.append("apply_date", form.apply_date);
-  formData.append("due_date", form.due_date);
-  formData.append("status", form.status);
-  formData.append("description", form.description);
-  formData.append("link", form.link);
-
-  // ถ้ามีการอัปโหลดไฟล์ใหม่ ให้ส่งไฟล์ใหม่ไปยังเซิร์ฟเวอร์
-  if (form.file) {
-    formData.append("file", form.file);
-  }
-
-  form.submit("patch", route("scholarships.update", { id: props.scholarship.id }), {
-    data: formData,
-    forceFormData: true, // บังคับให้ใช้ FormData
-    onSuccess: () => {
-      Swal.fire({
-        title: 'บันทึกสำเร็จ!',
-        text: 'ข้อมูลกิจกรรมได้รับการอัพเดทแล้ว',
-        icon: 'success',
-        confirmButtonText: 'เสร็จสิ้น',
-        customClass: {
-          confirmButton: 'bg-green-500 hover:bg-green-600 text-white',
-        },  
-      });
-
-    },
-    onError: (errors) => {
-      console.error(errors);
-      Swal.fire({
-        title: "ผิดพลาด!",
-        text: "เกิดข้อผิดพลาดในการบันทึกข้อมูลทุนการศึกษา",
-        icon: "error",
-        confirmButtonText: "ตกลง",
-        customClass: {
-          confirmButton: "swal-confirm-red",
-        },
-      });
-    },
-  });
+// Handle file changes
+const handleFileChange = (event, field) => {
+  const file = event.target.files[0];
+  form[field] = file;
 };
 
-
+const submit = () => {  
+    validateForm();  
+    if (Object.values(errorMessages.value).some(error => error)) {  
+        return;  
+    }  
+    
+    const formData = new FormData();  
+    formData.append('scholar_name', form.scholar_name);  
+    formData.append('apply_date', form.apply_date);  
+    formData.append('due_date', form.due_date);  
+    formData.append('status', form.status);  
+    formData.append('description', form.description);  
+    formData.append('link', form.link);  
+    formData.append('type', form.type);  
+    if (form.file) {  
+        formData.append('file', form.file);  
+    }  
+    
+    form.post(route("scholarships.update", { id: props.scholarship.id }), {  
+        data: formData,  
+        headers: {  
+            'Content-Type': 'multipart/form-data'  
+        },  
+        onSuccess: () => {  
+            Swal.fire({  
+                title: 'บันทึกสำเร็จ!',  
+                text: 'ข้อมูลกิจกรรมได้รับการอัพเดทแล้ว',  
+                icon: 'success',  
+                confirmButtonText: 'เสร็จสิ้น',  
+                confirmButtonColor: '#4CAF50',  
+            });  
+        },  
+        onError: (errors) => {  
+            console.error(errors);  
+            Swal.fire({  
+                title: "ผิดพลาด!",  
+                text: "เกิดข้อผิดพลาดในการบันทึกข้อมูลทุนการศึกษา",  
+                icon: "error",  
+                confirmButtonText: "ตกลง",  
+                confirmButtonColor: '#f44336',  
+            });  
+        },  
+    });  
+};
 
 const validateForm = () => {
-  // Clear previous error messages
   Object.keys(errorMessages.value).forEach(key => {
     errorMessages.value[key] = '';
   });
@@ -257,11 +243,6 @@ const validateForm = () => {
   }
 };
 
-const handleFileChange = (event) => {
-  form.file = event.target.files[0];
-};
-
 const isImage = (filename) => /\.(jpg|jpeg|png|gif)$/i.test(filename);
 const isPDF = (filename) => /\.pdf$/i.test(filename);
 </script>
-

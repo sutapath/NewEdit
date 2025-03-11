@@ -84,7 +84,7 @@ Route::get('/scholarships/create', [ScholarshipController::class, 'create'])->na
 Route::post('/scholarships', [ScholarshipController::class, 'store'])->name('scholarships.store');
     Route::get('/scholarships/{scholarship}', [ScholarshipController::class, 'show'])->name('scholarships.show');
     Route::get('/scholarships/{scholarship}/edit', [ScholarshipController::class, 'edit'])->name('scholarships.edit');
-Route::patch('/scholarships/{scholarship}', [ScholarshipController::class, 'update'])->name('scholarships.update');
+Route::post('/scholarships/{scholarship}', [ScholarshipController::class, 'update'])->name('scholarships.update');
 Route::delete('/scholarships/{scholarship}', [ScholarshipController::class, 'destroy'])->name('scholarships.destroy');
 
 Route::get('/scholarship-applications', [ScholarshipApplicationsController::class, 'index'])->name('scholarship_applications.index');

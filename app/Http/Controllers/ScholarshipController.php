@@ -105,20 +105,19 @@ public function update(Request $request, Scholarship $scholarship): RedirectResp
         'description' => 'sometimes|string',
         'link' => 'nullable|string|url',
         'officer_code' => 'nullable|string',
-        'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5012',
+        'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5048',
     ]);
 
-    // การลบไฟล์เก่า (ถ้ามี) และการอัปโหลดไฟล์ใหม่
-    if ($request->hasFile('file')) {
-        if ($scholarship->file && file_exists(public_path('storage/files/' . $scholarship->file))) {
-            unlink(public_path('storage/files/' . $scholarship->file));
+ 
+        if ($request->hasFile('file')) {
+            if ($scholarship->file && file_exists(public_path('storage/files/' . $scholarship->file))) {
+                unlink(public_path('storage/files/' . $scholarship->file));
+            }
+
+            $fileName = time() . '_file.' . $request->file('file')->extension();
+            $request->file('file')->move(public_path('storage/files'), $fileName);
+            $validatedData['file'] = $fileName;
         }
-
-        $fileName = time().'_file.'.$request->file('file')->extension();
-        $request->file('file')->move(public_path('storage/files'), $fileName);
-        $validatedData['file'] = $fileName;
-    }
-
     // อัปเดตข้อมูลทุนการศึกษา
     $scholarship->update($validatedData);
 
