@@ -119,21 +119,21 @@ private function sendLineNotification($token, $message)
     return $result;
 }
 
-    // แสดงข้อมูลเฉพาะตาม id
-    public function show(UserLineNotify $userLineNotify)
-    {
-        return Inertia::render('UserLineNotify/Show', [
-            'notification' => $userLineNotify
-        ]);
-    }
+    // // แสดงข้อมูลเฉพาะตาม id
+    // public function show(UserLineNotify $userLineNotify)
+    // {
+    //     return Inertia::render('UserLineNotify/Show', [
+    //         'notification' => $userLineNotify
+    //     ]);
+    // }
 
-    // แสดงฟอร์มแก้ไขข้อมูล
-    public function edit(UserLineNotify $userLineNotify)
-    {
-        return Inertia::render('UserLineNotify/Edit', [
-            'notification' => $userLineNotify
-        ]);
-    }
+    // // แสดงฟอร์มแก้ไขข้อมูล
+    // public function edit(UserLineNotify $userLineNotify)
+    // {
+    //     return Inertia::render('UserLineNotify/Edit', [
+    //         'notification' => $userLineNotify
+    //     ]);
+    // }
 
     // อัปเดตข้อมูลที่มีอยู่
     public function update(Request $request, UserLineNotify $userLineNotify)
