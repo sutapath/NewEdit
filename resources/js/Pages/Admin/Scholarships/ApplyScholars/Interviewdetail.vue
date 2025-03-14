@@ -22,39 +22,7 @@
           </div>
         </div>
 
-        <form @submit.prevent="handleSubmit" enctype="multipart/form-data"
-          v-if="(hasRole('admin') || hasRole('officer'))">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-
-            <div class="mb-4">
-              <InputLabel for="interview_score" value="คะแนน" />
-              <TextInput id="interview_score" type="text" class="mt-1 block w-full" v-model="form.interview_score"
-                required />
-              <InputError class="mt-2" :message="form.errors.interview_score" />
-            </div>
-            <div> 
-              <InputLabel for="Interview_results" value="อนุมัติ" />
-              <select id="Interview_results" v-model="form.Interview_results"
-                class="mt-1 block w-full bg-white rounded-xl border-gray-300" required>
-                <option value="1">ผ่านการพิจารณา</option>
-                <option value="0">ไม่ผ่านการพิจารณา</option>
-                <option value="2">ยกเลิกผล</option>
-              </select>
-              <InputError class="mt-2" :message="form.errors.Interview_results" />
-            </div>
-            <div class="flex items-center space-x-4">
-              <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
-                class="custom-button-success" @click="handleSubmit">
-                บันทึก
-              </PrimaryButton>
-            </div>
-          </div>
-        </form>
-
-
-
         <div class="grid grid-cols-1 mt-3 md:grid-cols-4 gap-6 w-full">
-
           <div>
             <InputLabel for="title" value="คำนำหน้า" />
             <select id="title" v-model="application.title" class="mt-1 block w-full bg-white rounded-xl border-gray-300"
@@ -103,13 +71,6 @@
             <InputLabel for="phone" value="หมายเลขโทรศัพท์" />
             <TextInput readonly id="phone" type="text" class="mt-1 block w-full" v-model="application.phone" required
               autocomplete="fname" />
-          </div>
-
-          <!-- Last Name Field -->
-          <div>
-            <InputLabel for="email" value="Email" />
-            <TextInput readonly id="email" type="text" class="mt-1 block w-full" v-model="application.email" required
-              autocomplete="lname" />
           </div>
         </div>
 
@@ -326,15 +287,13 @@ import { usePermission } from "@/composables/permissions";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
+
 import { Head, Link } from '@inertiajs/vue3';
 // import Scholarship from '@/Layouts/Scholarship.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InputError from '@/Components/InputError.vue';
 import Swal from 'sweetalert2';
-// Permissions
 const { hasRole, hasPermission } = usePermission();
-
-// Define props
 const props = defineProps({
   application: Object
 });

@@ -203,7 +203,9 @@
   .bg-officer {
 	background-color:#e8f4ea; /* สีพื้นหลังสำหรับแถวที่มีบทบาท Officer */
   }
- 
+   .bg-manager {
+	background-color:#FFFFE0; /* สีพื้นหลังสำหรับแถวที่มีบทบาท Officer */
+  }
   
   .text-no-role {
 	color: #ff0000; /* สีตัวอักษรแดงสำหรับแถวที่ไม่มีบทบาท */

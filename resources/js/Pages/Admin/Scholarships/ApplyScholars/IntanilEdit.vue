@@ -29,7 +29,6 @@ const form = useForm({
     leader_proof: null,
     gpa_image: null,
     id_card: props.auth.user.id_card || '',
-    email: props.auth.user.email || '',
     result: '1',
     Interview_results: '2',
 });
@@ -157,11 +156,6 @@ const handleSubmit = () => {
                             <InputLabel for="phone" value="หมายเลขโทรศัพท์" />
                             <TextInput id="phone" type="text" class="mt-1 block w-full" v-model="form.phone" required
                                 autocomplete="phone" />
-                        </div>
-                        <div>
-                            <InputLabel for="email" value="Email" />
-                            <TextInput id="email" type="text" class="mt-1 block w-full" v-model="form.email" required
-                                autocomplete="email" />
                         </div>
                         <div>
                             <InputLabel for="gpax" value="ผลการเรียน ( 5 ภาคเรียนหรือ 6 ภาคเรียน )" />

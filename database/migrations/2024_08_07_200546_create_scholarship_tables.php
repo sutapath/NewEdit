@@ -54,7 +54,6 @@ class CreateScholarshipTables extends Migration
             $table->string('leader_proof')->nullable();
             $table->string('gpa_image')->nullable();
             $table->string('id_card')->nullable();
-            $table->string('email')->nullable();
             $table->enum('result', ['0', '1','2','3','4'])->nullable(); 
             $table->text('suggestions')->nullable();
             $table->date('interview_date')->nullable();

@@ -28,7 +28,6 @@ const form = useForm({
     certificates: null,
     scholar_type: '1',
     id_card: props.application.id_card || '',
-    email: props.application.email || '',
     result: '2',
     reg_form: null,
     Interview_results: '2',
@@ -313,11 +312,6 @@ const validateForm = () => {
                             <InputLabel for="phone" value="หมายเลขโทรศัพท์" />
                             <TextInput require id="phone" type="text" class="mt-1 block w-full" v-model="form.phone"
                                 required autocomplete="phone" />
-                        </div>
-                        <div>
-                            <InputLabel for="email" value="Email" />
-                            <TextInput require id="email" type="text" class="mt-1 block w-full" v-model="form.email"
-                                required autocomplete="email" />
                         </div>
                         <div>
                     <InputLabel for="faculty" value="คณะ" />

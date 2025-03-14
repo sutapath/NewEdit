@@ -66,10 +66,14 @@ Route::delete('/users/{user}/permissions/{permission}', RevokePermissionFromUser
 Route::delete('/users/{user}/roles/{role}', RemoveRoleFromUserController::class)
     ->name('users.roles.destroy');
 // Route::put('/users/update-roles', [UserController::class, 'updateRoles'])->name('users.updateRoles');
-    
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
+// Route::get('/dashboard', function () {
+//     // return Inertia::render('Dashboard');
+//     Route::get('/dashboard', [ScholarshipController::class, 'dashBoard']);
+// })->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [ScholarshipController::class, 'dashBoard'])->name('dashboard');
+});
 
 Route::middleware('auth')->group(function () {
 Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -102,6 +106,7 @@ Route::put('/interviewapprove/scholarship-applications/{application}', [Scholars
 Route::get('/interviewdetail/scholarship-applications/{application}', [ScholarshipApplicationsController::class, 'interviewdetail'])->name('scholarship_applications.interviewdetail');
 Route::get('/admin/scholarship-applications', [ScholarshipApplicationsController::class, 'indexadmin'])->name('scholarship_applications.indexadmin');
 Route::get('/admin/scholarstudents', [ScholarshipApplicationsController::class, 'scholarstudents'])->name('scholarship_applications.scholarstudents');
+Route::get('/admin/AllStudents', [ScholarshipApplicationsController::class, 'AllStudents'])->name('scholarship_applications.AllStudents');
 Route::get('/apply-scholars/admin-index', [ScholarshipApplicationsController::class, 'index'])->name('applications.index'); // อันนี้
 Route::get('/user/activity-saves/{user_id}', [ScholarshipApplicationsController::class, 'userSaves'])->name('activity_saves.user');
 Route::get('/admin/report', [ScholarshipApplicationsController::class, 'secoundreport'])->name('scholarship_applications.secoundreport');
@@ -159,7 +164,8 @@ Route::post('/line-notify', [LineNotifyController::class, 'notify'])->name('noti
 Route::post('/line-notify/send-to-all', [LineNotifyController::class, 'sendNotificationAll'])->name('line-notify.send-to-all');
 Route::get('/docs_sends/{id}', [PublishRequestController::class, 'show']);
 Route::post('/publish_requests/createInfo', [PublishRequestController::class, 'createInfo'])->name('publish_requests.createInfo');
-
+Route::get('/publish_requests/EditInfo/{id}', [PublishRequestController::class, 'EditInfo'])->name('publish_requests.EditInfo');
+// Route::post('/publish_requests/show', [PublishRequestController::class, 'show'])->name('publish_requests.show');
 Route::post('/publish_requests/create', [PublishRequestController::class, 'create'])->name('publish_requests.create');
 Route::post('/publish_requests/sends', [PublishRequestController::class, 'store'])->name('publish_requests.store');
  

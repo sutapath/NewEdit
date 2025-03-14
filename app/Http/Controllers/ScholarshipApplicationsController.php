@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
+use App\Models\DocumentRequest;
 
 use App\Models\ScholarshipApplication;
 use App\Models\ActivitySave;
@@ -32,30 +33,35 @@ class ScholarshipApplicationsController extends Controller
             ->where('Interview_results', 1)
             ->get()
             ->map(function ($application) {
-                // เอา user ที่ตรงกับ user_id ใน application มาแปะ
                 $application->user = User::with('roles')->find($application->user_id);
                 return $application;
             });
-
-        // ดึงข้อมูลของผู้ใช้ที่ล็อกอิน พร้อม roles
         $currentUser = Auth::user()->load('roles');
 
         return Inertia::render('Admin/Scholarships/ApplyScholars/Scholarstudents', [
-            'applications' => $applications, // ข้อมูลนักศึกษาทุน พร้อม user & roles
-            'currentUser' => $currentUser, // ผู้ใช้ที่ล็อกอิน พร้อม role
+            'applications' => $applications,
+            'currentUser' => $currentUser,
             'scholarships' => $scholarships,
-            'roles' => RoleResource::collection(Role::all()), // role ทั้งหมด
+            'roles' => RoleResource::collection(Role::all()),
         ]);
     }
+    public function AllStudents()
+    {
+        $scholarships = Scholarship::all();
+        $applications = ScholarshipApplication::with('scholarship')
+            ->where('Interview_results', 1)
+            ->whereIn('scholar_id', $scholarships->pluck('id')) // เช็คว่ามี scholar_id ใน scholarships หรือไม่
+            ->limit($scholarships->count()) // จำกัดตามจำนวน scholarships
+            ->get();
 
-
+        return Inertia::render('Admin/Scholarships/ApplyScholars/AllStudents', [
+            'scholarships' => $scholarships,
+            'applications' => $applications,
+        ]);
+    }
     public function index()
     {
-
-        // ดึงข้อมูลการสมัครทั้งหมดพร้อมกับข้อมูลของผู้ใช้
         $applications = ScholarshipApplication::with('user')->get();
-
-        // ส่งข้อมูลไปยัง Inertia
         return Inertia::render('Admin/Scholarships/ApplyScholars/AdminIndex', [
             'applications' => $applications,
             'currentUser' => Auth::user(),
@@ -64,8 +70,6 @@ class ScholarshipApplicationsController extends Controller
 
     public function indexadmin()
     {
-
-
         $scholarships = Scholarship::all();
         $applications = ScholarshipApplication::with('user')->get();
 
@@ -75,9 +79,6 @@ class ScholarshipApplicationsController extends Controller
             'scholarships' => $scholarships,
         ]);
     }
-
-
-
     public function intanilcreate(Request $request)
     {
         $scholar_id = $request->query('scholar_id');
@@ -88,8 +89,6 @@ class ScholarshipApplicationsController extends Controller
             'type' => $type,
         ]);
     }
-
-
     public function pertermcreate(Request $request): Response
     {
         $scholar_id = $request->input('scholar_id');
@@ -98,49 +97,54 @@ class ScholarshipApplicationsController extends Controller
             'scholar_id' => $scholar_id,
         ]);
     }
-
     public function store(CreateScholarshipApplicationsRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
+        try {
+            $validated = $request->validated();
 
-        foreach (['imagefile', 'scholar_form', 'reg_form', 'fee_receipt', 'certificates', 'conduct_cert', 'portfolio', 'fam_cert', 'award_certs', 'leader_proof', 'gpa_image'] as $fileField) {
-            if ($request->hasFile($fileField)) {
-                $fileName = time() . '_' . uniqid() . '.' . $request->file($fileField)->extension();
-                $request->file($fileField)->move(public_path('storage/files'), $fileName);
-                $validated[$fileField] = $fileName;
+            foreach (['imagefile', 'scholar_form', 'reg_form', 'fee_receipt', 'certificates', 'conduct_cert', 'portfolio', 'fam_cert', 'award_certs', 'leader_proof', 'gpa_image'] as $fileField) {
+                if ($request->hasFile($fileField)) {
+                    $fileName = time() . '_' . uniqid() . '.' . $request->file($fileField)->extension();
+                    $request->file($fileField)->move(public_path('storage/files'), $fileName);
+                    $validated[$fileField] = $fileName;
+                }
             }
+
+            ScholarshipApplication::create($validated);
+
+            return redirect()->route('scholarship_applications.index')
+                ->with('success', 'บันทึกข้อมูลสำเร็จ!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()]);
         }
-        ScholarshipApplication::create($validated);
-        return redirect()->route('scholarship_applications.index');
     }
+
 
     public function interview()
     {
-        // ดึงข้อมูลทุนการศึกษาทั้งหมด
         $scholarships = Scholarship::all();
-
-        // ตรวจสอบบทบาทของผู้ใช้
+        $publicInfo = DocumentRequest::where('type', 0)
+            ->whereNotNull('scholar_id') // เพิ่มเงื่อนไขนี้เพื่อตรวจสอบว่า scholar_id ไม่เป็น null  
+            ->orderBy('created_at', 'desc')
+            ->get();
         if (auth()->user()->hasRole(['admin', 'officer'])) {
-            // ถ้าเป็น admin หรือ officer ให้ดึงข้อมูลทั้งหมดของ ScholarshipApplication
             $applications = ScholarshipApplication::with('user')->get();
         } elseif (auth()->user()->hasRole(['student', 'member'])) {
-            // ถ้าเป็น student หรือ member ให้ดึงเฉพาะข้อมูลของผู้ใช้ที่ล็อกอินอยู่
             $applications = ScholarshipApplication::with('user')
                 ->where('user_id', auth()->user()->id)
                 ->get();
         }
-        // ส่งข้อมูลไปยัง view หรือหน้า Inertia
         return Inertia::render('Admin/Scholarships/ApplyScholars/Interview', [
             'scholarships' => $scholarships,
             'applications' => $applications,
+            'publicInfos' => $publicInfo,
         ]);
     }
-
     public function update(CreateScholarshipApplicationsRequest $request, $id)
     {
         $application = ScholarshipApplication::findOrFail($id);
-
-        // กำหนดชื่อฟิลด์ที่เกี่ยวข้องกับไฟล์
         $fileFields = [
             'imagefile',
             'scholar_form',
@@ -156,32 +160,22 @@ class ScholarshipApplicationsController extends Controller
         ];
 
         $validated = $request->validated();
-
-        // อัปเดตไฟล์
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
-                // ถ้ามีไฟล์ใหม่
                 if ($application->$field && file_exists(public_path('storage/files/' . $application->$field))) {
                     unlink(public_path('storage/files/' . $application->$field));
                 }
-
-                // บันทึกไฟล์ใหม่
                 $fileName = time() . '_' . $field . '.' . $request->file($field)->extension();
                 $request->file($field)->move(public_path('storage/files'), $fileName);
                 $validated[$field] = $fileName;
             } else {
-                // ถ้าไม่มีไฟล์ใหม่ ให้ใช้ข้อมูลเดิม
                 $validated[$field] = $application->$field;
             }
         }
-
-        // อัปเดตข้อมูลของการสมัคร
         $application->update($validated);
 
         return redirect()->route('scholarship_applications.index')->with('success', 'Application updated successfully.'); // เพิ่มข้อความยืนยัน
     }
-
-
 
     public function check(CreateScholarshipApplicationsRequest $request, $id)
     {
@@ -190,17 +184,19 @@ class ScholarshipApplicationsController extends Controller
         $application->update($validated);
         return;
     }
-
     public function interviewedit(CreateScholarshipApplicationsRequest $request, $id)
     {
-        $application = ScholarshipApplication::findOrFail($id);
-        $validated = $request->validated();
+        try {
+            $application = ScholarshipApplication::findOrFail($id);
+            $validated = $request->validated();
+            $application->update($validated);
 
-        // อัปเดตข้อมูล application
-        $application->update($validated);
-        $application->updateBasedOnInterviewResults();
-        return;
+            return;
+        } catch (\Exception $e) {
+            return;
+        }
     }
+
 
     public function intanil($id)
     {
@@ -239,7 +235,6 @@ class ScholarshipApplicationsController extends Controller
         $application->delete();
         return back();
     }
-
     public function report()
     {
         $applications = ScholarshipApplication::where('interview_results', '1')->get();
@@ -250,7 +245,6 @@ class ScholarshipApplicationsController extends Controller
             $applications = ScholarshipApplication::where('user_id', auth()->user()->id)->get();
             $activities = ActivitySave::where('user_id', auth()->user()->id)->get();
         }
-
         return Inertia::render('Admin/Activities/Report', [
             'applications' => $applications,
             'scholarships' => $scholarships,

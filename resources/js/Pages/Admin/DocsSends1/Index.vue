@@ -16,7 +16,6 @@ import Swal from 'sweetalert2';  // เพิ่มการ import SweetAlert2
 const { hasRole } = usePermission();
 const props = defineProps({
   docsSends: Array,
-  publicInfos : Array,
 });
 const form = useForm({});
 const currentPage = ref(1);
@@ -27,7 +26,6 @@ const resetPage = ref(false);
 const showConfirmDeleteDocsModal = ref(false);
 const selectedDocumentType = ref('all');
 const DocsIdToDelete = ref(null);
-import moment from 'moment'; 
 
 const documentModal = ref(false);
 const documentFile = ref(null);
@@ -70,11 +68,6 @@ const confirmDeleteDocs = (id) => {
       });
     }
   });
-};
-const formatDate = (date) => {
-  if (!date) return '';
-  const thaiYear = moment(date).year() + 543;
-  return moment(date).format(`DD/MM/${thaiYear}`);
 };
 const filteredDocsSends = computed(() => {
   // ตรวจสอบ props.docsSends ว่ามีข้อมูลหรือไม่
@@ -123,51 +116,6 @@ const statusClass = (result) => {
       return 'bg-gray-300 text-dark py-1 px-3 rounded-full';
     default:
       return '';
-  }
-}; 
-const handleDelete = async (publishId) => {
-  try {
-    const result = await Swal.fire({
-      title: 'คุณแน่ใจไหม?',
-      text: "คุณต้องการลบข้อมูลนี้หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'ใช่, ลบ!',
-      cancelButtonText: 'ยกเลิก',
-      reverseButtons: true,
-      confirmButtonColor: '#FF4D4D', // สีปุ่มยืนยัน (สีแดง)
-      cancelButtonColor: '#4A90E2', // สีปุ่มยกเลิก (สีน้ำเงิน)
-      buttonsStyling: true // ใช้การกำหนดสีของปุ่มโดยตรง
-    });
-
-    if (result.isConfirmed) {
-      form.delete(route('publish_requests.delete', publishId), {
-        onSuccess: () => {
-          Swal.fire({
-            title: 'สำเร็จ!',
-            text: 'ลบข้อมูลสำเร็จ',
-            icon: 'success',
-            confirmButtonColor: '#28A745' // สีเขียวสำหรับปุ่ม OK
-          });
-        },
-        onError: () => {
-          Swal.fire({
-            title: 'เกิดข้อผิดพลาด',
-            text: 'ไม่สามารถลบข้อมูลได้',
-            icon: 'error',
-            confirmButtonColor: '#FF4D4D' // สีแดงสำหรับปุ่ม OK
-          });
-        }
-      });
-    }
-  } catch (error) {
-    console.error('Error deleting publish info:', error);
-    Swal.fire({
-      title: 'เกิดข้อผิดพลาด',
-      text: 'ไม่สามารถดำเนินการได้',
-      icon: 'error',
-      confirmButtonColor: '#FF4D4D'
-    });
   }
 };
 const deleteDocs = () => {
@@ -253,29 +201,6 @@ const deleteDocs = () => {
         </div>
       </div>
     </div>
-    <div class="max-w-7xl mx-auto mb-3 py-2 px-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-      <div v-for="publish in props.publicInfos" :key="publish.id">
-        <div class="bg-white p-6 rounded-lg shadow-lg flex justify-between items-start">
-          <div>
-            <!-- ใช้ v-if เพื่อเช็ค document_type -->
-            <h3 class="text-xl font-bold text-gray-800">
-              <span v-if="publish.document_type === 'transcripts'">เอกสารแสดงผลการเรียน</span>
-              <span v-else-if="publish.document_type === 'operat_docs'">แบบบันทึกการดำเนินงาน</span>
-              <span v-else>เอกสารอื่นๆ</span>
-            </h3>
-            <p class="text-gray-600 text-lg">
-              กำหนดส่ง {{ formatDate(publish.send_date) }}
-            </p>
-          </div>
-          <div v-if="hasRole('admin') || hasRole('officer')" class="ml-4">
-            <PrimaryButton class="custom-button-danger" @click="handleDelete(publish.id)">
-              ลบ
-            </PrimaryButton>
-          </div>
-        </div>
-      </div>
-    </div>
-
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 bg-white sm:rounded-xl mb-20">
       <div class="overflow-x-auto">
@@ -330,7 +255,7 @@ const deleteDocs = () => {
             </TableRow>
           </template>
         </Table>
-        <div class="flex justify-end items-center w-full mt-4 space-x-4">
+        <div class="flex justify-end items-center w-full mt-4 space-x-4"> 
           <div class="flex items-center">
             <label for="perPage" class="text-sm font-medium text-gray-700 mr-2">ข้อมูลต่อหน้า</label>
             <select v-model="perPage" class="px-2 py-1 border border-gray-300 rounded text-gray-800" id="perPage">
@@ -339,14 +264,14 @@ const deleteDocs = () => {
               <option value="50">50 รายการ</option>
               <option value="100">100 รายการ</option>
             </select>
-          </div>
+          </div> 
           <span class="px-4 py-2">หน้า {{ currentPage }} จาก {{ totalPages }}</span>
 
           <div class="inline-flex space-x-2">
             <button class="px-4 py-2 bg-gray-300 text-gray-800 rounded" :disabled="currentPage === 1"
               @click="currentPage--">
               ก่อนหน้า
-            </button>
+            </button> 
             <button v-if="currentPage < totalPages && totalItems > 0"
               class="px-4 py-2 bg-gray-800 text-gray-100 rounded" @click="currentPage++">
               ถัดไป
@@ -355,7 +280,7 @@ const deleteDocs = () => {
         </div>
 
       </div>
-    </div>
+    </div> 
     <Modal :show="documentModal">
       <div class="p-6">
         <h2 class="text-lg font-semibold text-slate-800">เอกสาร</h2>

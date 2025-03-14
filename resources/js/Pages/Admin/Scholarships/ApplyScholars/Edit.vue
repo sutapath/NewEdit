@@ -16,7 +16,6 @@ const form = useForm({
     lname: initialForm.lname || '',
     id_card: initialForm.id_card || '',
     phone: initialForm.phone || '',
-    email: initialForm.email || '',
     gpax: initialForm.gpax || '',
     type_ability: initialForm.type_ability || '',
     imagefile: null,
@@ -148,10 +147,6 @@ const validateForm = () => {
                           <div>
                               <InputLabel for="phone" value="หมายเลขโทรศัพท์" />
                               <TextInput id="phone" type="text" class="mt-1 block w-full" v-model="form.phone" required autocomplete="phone" />
-                          </div>
-                          <div>
-                              <InputLabel for="email" value="Email" />
-                              <TextInput id="email" type="text" class="mt-1 block w-full" v-model="form.email" required autocomplete="email" />
                           </div>
                           <div>
                               <InputLabel for="gpax" value="ผลการเรียน ( 5 ภาคเรียนหรือ 6 ภาคเรียน )" />

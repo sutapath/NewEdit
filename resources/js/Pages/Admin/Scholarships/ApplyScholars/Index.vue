@@ -12,25 +12,31 @@ import { format, addYears } from 'date-fns'; // นำเข้าฟังก�
 import Table from "@/Components/Table.vue";
 import TableRow from "@/Components/TableRow.vue";
 import TableHeaderCell from "@/Components/TableHeaderCell.vue";
-import TableDataCell from "@/Components/TableDataCell.vue";
-// State and Methods
+import TableDataCell from "@/Components/TableDataCell.vue"; 
 const { hasRole } = usePermission();
 const form = useForm({});
 const showConfirmDeleteModal = ref(false);
 const applicationToDelete = ref(null);
 const selectedScholarId = ref('');
-const searchQuery = ref(''); // เก็บคำค้นหาของผู้ใช้
+const searchQuery = ref(''); 
+import debounce from 'lodash/debounce';
 
 // Data from the page props
 const props = defineProps({
   applications: Array,
   currentUser: Object,
-  scholarships: Array // Include scholarships data for the dropdown
+  scholarships: Array 
 });
 
 const currentPage = ref(1);
 const perPage = ref(10);
-const totalItems = ref(props.applications.length); 
+const totalItems = ref(props.applications.length);
+const debouncedSearch = debounce((query) => {
+  searchQuery.value = query;
+}, 500);
+const updateSearchQuery = (query) => {
+  debouncedSearch(query);
+};
 const filteredApplications = computed(() => {
   if (!props.applications) return [];
 

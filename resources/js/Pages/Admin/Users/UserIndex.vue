@@ -12,6 +12,7 @@ import Modal from "@/Components/Modal.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import Swal from "sweetalert2";
+import debounce from 'lodash/debounce';
 
 const props = defineProps({
   users: Array,
@@ -139,7 +140,10 @@ const filteredUsers = computed(() => {
   const end = start + perPage.value; 
   return results.slice(start, end);
 });
- 
+// Debounce the search function  
+const updateFilteredUsers = debounce(() => {
+  totalItems.value = filteredUsers.value.length;
+}, 300);
 watch(perPage, () => {
   currentPage.value = 1;
 });
@@ -218,7 +222,8 @@ const totalPages = computed(() => {
         <template #default>
           <TableRow v-for="(user, index) in filteredUsers" :key="user.id" class="border-b" :class="{
             'bg-admin': user.roles.some((role) => role.name === 'admin'),
-            'bg-officer': user.roles.some((role) => role.name === 'officer'),
+  'bg-officer': user.roles.some((role) => role.name === 'officer'),
+  'bg-manager': user.roles.some((role) => role.name === 'manager'),
             'text-no-role': user.roles.length === 0,
           }">
             <TableDataCell class="whitespace-nowrap">{{ index + 1 }}</TableDataCell>

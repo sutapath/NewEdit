@@ -21,6 +21,7 @@ class Scholarship extends Model
         'file',
         'type',
         'link',
+        'limits',
         
     ];
 

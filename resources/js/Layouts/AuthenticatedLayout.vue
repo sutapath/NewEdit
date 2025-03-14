@@ -18,7 +18,7 @@
                                 <NavLink v-if="hasRole('admin') " :href="route('users.index')"
                                     :active="route().current('users.index')">
                                     ผู้ใช้งาน
-                                </NavLink> 
+                                </NavLink>
                                 <NavLink v-if="hasRole('scholar')" :href="route('scholarship_applications.index')"
                                     :active="route().current('scholarship_applications.index')">
                                     ข้อมูลทุนการศึกษา
@@ -56,7 +56,8 @@
                                                 :class="{ 'text-blue-500 font-bold text-sm': isActiveRoute('scholarship_applications.indexadmin') }">
                                                 ตรวจข้อมูลการสมัคร
                                             </ResponsiveNavLink>
-                                            <ResponsiveNavLink v-if="hasRole('admin') || hasRole('officer')" :href="route('scholarship_applications.interview')"
+                                            <ResponsiveNavLink v-if="hasRole('admin') || hasRole('officer') || hasRole('student') "
+                                                :href="route('scholarship_applications.interview')"
                                                 :class="{ 'text-blue-500 font-bold text-sm': isActiveRoute('scholarship_applications.interview') }">
                                                 สัมภาษณ์
                                             </ResponsiveNavLink>
@@ -64,6 +65,11 @@
                                                 :href="route('scholarship_applications.scholarstudents')"
                                                 :class="{ 'text-blue-500 font-bold text-sm': isActiveRoute('scholarship_applications.scholarstudents') }">
                                                 นักศึกษาทุน
+                                            </ResponsiveNavLink>
+                                            <ResponsiveNavLink v-if="hasRole('student') || hasRole('member') || hasRole('admin')" 
+                                                :href="route('scholarship_applications.AllStudents')"
+                                                :class="{ 'text-blue-500 font-bold text-sm': isActiveRoute('scholarship_applications.AllStudents') }">
+                                                ข้อมูลนักศึกษาทุน
                                             </ResponsiveNavLink>
                                         </template>
                                     </Dropdown>
@@ -95,12 +101,14 @@
                                                 :class="{ 'text-blue-500 font-bold text-sm': isActiveRoute('activities.index') }">
                                                 กิจกรรม
                                             </ResponsiveNavLink>
-                                            <ResponsiveNavLink v-if="hasRole('scholar') || hasRole('intlscholar')  || hasRole('admin') || hasRole('officer')"
+                                            <ResponsiveNavLink
+                                                v-if="hasRole('scholar') || hasRole('intlscholar')  || hasRole('admin') || hasRole('officer')"
                                                 :href="route('activity_registrations.index')"
                                                 :class="{ 'text-blue-500 font-bold text-sm': isActiveRoute('activity_registrations.index') }">
                                                 ข้อมูลกิจกรรมนักศึกษา
                                             </ResponsiveNavLink>
-                                            <ResponsiveNavLink v-if="hasRole('scholar') || hasRole('intlscholar')  || hasRole('admin') || hasRole('officer')"
+                                            <ResponsiveNavLink
+                                                v-if="hasRole('scholar') || hasRole('intlscholar')  || hasRole('admin') || hasRole('officer')"
                                                 :href="route('activity_saves.index')"
                                                 :class="{ 'text-blue-500 font-bold text-sm': isActiveRoute('activity_saves.index') }">
                                                 บันทึกกิจกรรม
@@ -173,8 +181,7 @@
                                         <div class="px-4 py-2 text-blue-800 font-bold text-sm">จัดการบัญชีผู้ใช้
                                         </div>
 
-                                        <DropdownLink :href="route('users.index')"
-                                            v-if="hasRole('admin')">จัดการผู้ใช้
+                                        <DropdownLink :href="route('users.index')" v-if="hasRole('admin')">จัดการผู้ใช้
                                         </DropdownLink>
                                         <DropdownLink :href="route('profile.edit')">
                                             บัญชี
@@ -215,7 +222,8 @@
                                             v-if="hasRole('admin') || hasRole('officer') || hasRole('scholar') || hasRole('intlscholar')">
                                             กิจกรรม
                                         </div>
-                                        <DropdownLink v-if="hasRole('admin') || hasRole('officer')|| hasRole('scholar') || hasRole('intlscholar')"
+                                        <DropdownLink
+                                            v-if="hasRole('admin') || hasRole('officer')|| hasRole('scholar') || hasRole('intlscholar')"
                                             :href="route('activities.index')">
                                             กิจกรรม
                                         </DropdownLink>
@@ -228,11 +236,13 @@
                                             :href="route('activity_saves.index')">
                                             บันทึกกิจกรรม
                                         </DropdownLink>
-                                        <DropdownLink v-if="hasRole('admin') || hasRole('officer')|| hasRole('manager')" :href="route('scholarship_applications.report')">
+                                        <DropdownLink v-if="hasRole('admin') || hasRole('officer')|| hasRole('manager')"
+                                            :href="route('scholarship_applications.report')">
                                             สรุปข้อมูล
                                         </DropdownLink>
 
-                                        <div v-if="hasRole('intlscholar') || hasRole('scholar') || hasRole('admin') || hasRole('officer')" class="px-4 py-2 text-blue-800 font-bold text-sm">
+                                        <div v-if="hasRole('intlscholar') || hasRole('scholar') || hasRole('admin') || hasRole('officer')"
+                                            class="px-4 py-2 text-blue-800 font-bold text-sm">
                                             การดำเนินการ
                                         </div>
 
@@ -246,7 +256,8 @@
 
 
 
-                                        <div v-if="hasRole('admin') || hasRole('officer') || hasRole('manager')" class="px-4 py-2 text-blue-800 font-bold text-sm">
+                                        <div v-if="hasRole('admin') || hasRole('officer') || hasRole('manager')"
+                                            class="px-4 py-2 text-blue-800 font-bold text-sm">
                                             รายงาน
                                         </div>
                                         <DropdownLink
@@ -348,8 +359,7 @@
                             :href="route('scholarship_applications.scholarstudents')">
                             นักศึกษาทุน
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink v-if="hasRole('scholar') "
-                            :href="route('scholarship_applications.index')">
+                        <ResponsiveNavLink v-if="hasRole('scholar') " :href="route('scholarship_applications.index')">
                             ข้อมูลทุนการศึกษา
                         </ResponsiveNavLink>
 
@@ -357,24 +367,29 @@
                             v-if="hasRole('admin') || hasRole('officer') || hasRole('scholar') || hasRole('intlscholar')">
                             กิจกรรม
                         </div>
-                        <ResponsiveNavLink v-if="hasRole('admin') || hasRole('officer') || hasRole('scholar') || hasRole('intlscholar')"
+                        <ResponsiveNavLink
+                            v-if="hasRole('admin') || hasRole('officer') || hasRole('scholar') || hasRole('intlscholar')"
                             :href="route('activities.index')">
                             กิจกรรมทั้งหมด
                         </ResponsiveNavLink>
 
-                        <ResponsiveNavLink v-if="hasRole('scholar') || hasRole('intlscholar')  || hasRole('admin') || hasRole('officer')"
+                        <ResponsiveNavLink
+                            v-if="hasRole('scholar') || hasRole('intlscholar')  || hasRole('admin') || hasRole('officer')"
                             :href="route('activity_registrations.index')">
                             ข้อมูลกิจกรรมนักศึกษา
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink v-if="hasRole('scholar') || hasRole('intlscholar')  || hasRole('admin') || hasRole('officer')"
+                        <ResponsiveNavLink
+                            v-if="hasRole('scholar') || hasRole('intlscholar')  || hasRole('admin') || hasRole('officer')"
                             :href="route('activity_saves.index')">
                             บันทึกกิจกรรม
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink v-if="hasRole('admin') || hasRole('officer') || hasRole('manager')" :href="route('scholarship_applications.report')">
+                        <ResponsiveNavLink v-if="hasRole('admin') || hasRole('officer') || hasRole('manager')"
+                            :href="route('scholarship_applications.report')">
                             สรุปข้อมูล
                         </ResponsiveNavLink>
 
-                        <div v-if="hasRole('intlscholar') || hasRole('scholar') || hasRole('admin') || hasRole('officer')" class="px-4 py-2 text-blue-800 font-bold text-sm">
+                        <div v-if="hasRole('intlscholar') || hasRole('scholar') || hasRole('admin') || hasRole('officer')"
+                            class="px-4 py-2 text-blue-800 font-bold text-sm">
                             การดำเนินการ
                         </div>
 
@@ -384,9 +399,10 @@
                             การส่งเอกสาร
                         </ResponsiveNavLink>
 
-                        
+
                     </div>
-                    <div v-if="hasRole('admin') || hasRole('officer') || hasRole('manager')" class="px-4 py-2 text-blue-800 font-bold text-sm">
+                    <div v-if="hasRole('admin') || hasRole('officer') || hasRole('manager')"
+                        class="px-4 py-2 text-blue-800 font-bold text-sm">
                         รายงาน
                     </div>
                     <ResponsiveNavLink v-if="hasRole('admin') || hasRole('officer') || hasRole('manager')"
@@ -399,11 +415,11 @@
                         :class="{ 'text-blue-500 font-bold text-sm': isActiveRoute('scholarship_applications.report') }">
                         สรุปข้อมูลกิจกรรม
                     </ResponsiveNavLink>
-<hr />
-                        <ResponsiveNavLink :href="route('logout')" method="post" as="button"
-                            class="text-white font-bold text-sm bg-red-500">
-                            ออกจากระบบ
-                        </ResponsiveNavLink>
+                    <hr />
+                    <ResponsiveNavLink :href="route('logout')" method="post" as="button"
+                        class="text-white font-bold text-sm bg-red-500">
+                        ออกจากระบบ
+                    </ResponsiveNavLink>
                 </div>
 
 

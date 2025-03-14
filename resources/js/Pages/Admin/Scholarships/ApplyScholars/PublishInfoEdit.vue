@@ -1,7 +1,7 @@
 <template>
   <div class="w-full max-w-7xl p-6 mx-auto">
     <form @submit.prevent="handleSubmit" class="flex flex-col">
-      <!-- เลือกทุนการศึกษา -->
+      <!-- Scholarship Selection -->
       <div class="mt-4">
         <InputLabel for="docType" class="block text-gray-700 text-md font-semibold mb-2">
           ทุนการศึกษาทั้งหมด:
@@ -15,7 +15,10 @@
         </select>
       </div>
 
-      <!-- วันที่กำหนดส่ง -->
+      <!-- Document Request Preview -->
+      <pre>{{ documentRequest }}</pre>
+
+      <!-- Interview Date -->
       <div class="mt-4">
         <InputLabel for="sendDate" class="block text-gray-700 text-md font-semibold mb-2">
           วันที่สัมภาษณ์:
@@ -24,6 +27,8 @@
           class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-md">
         </TextInput>
       </div>
+
+      <!-- Interview Location -->
       <div class="mt-4">
         <InputLabel for="location" class="block text-gray-700 text-md font-semibold mb-2">
           สถานที่สัมภาษณ์:
@@ -32,7 +37,8 @@
           class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-md">
         </TextInput>
       </div>
-      <!-- ข้อความตัวอย่าง -->
+
+      <!-- Preview Message -->
       <div class="mt-6">
         <InputLabel class="block text-gray-700 text-md font-semibold mb-2">ข้อความตัวอย่าง:</InputLabel>
         <textarea readonly
@@ -41,7 +47,7 @@
         </textarea>
       </div>
 
-      <!-- ปุ่มส่งและยกเลิก -->
+      <!-- Submit & Cancel Buttons -->
       <div class="mt-6 flex justify-end space-x-4">
         <button type="submit" class="custom-button-success">ส่งข้อความ</button>
         <button type="button" @click="handleCancel" class="custom-button-danger">ยกเลิก</button>
@@ -49,7 +55,6 @@
     </form>
   </div>
 </template>
-
 <script setup>
 import { ref, computed } from 'vue';
 import moment from 'moment';
@@ -58,48 +63,54 @@ import { useForm, usePage } from '@inertiajs/vue3';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import Swal from 'sweetalert2';
-moment.locale('th');
 
-const { props } = usePage();
-const scholarships = props.scholarships || [];
-const userLineNotify = props.userLineNotify || [];
+const props = defineProps({
+  scholarships: {
+    type: Array,
+    default: () => []
+  },
+  documentRequest: {
+    type: Object,
+    default: () => ({})
+  },
+  userLineNotify: {
+    type: Array,
+    default: () => []
+  }
+});
+
+console.log(props)
 const form = useForm({
-  scholar_id: scholarships.length > 0 ? scholarships[0].id : '',
+  scholar_id: props.scholarships.length > 0 ? props.scholarships[0].id : '',
   send_date: '',
   type: 0,
   location: '',
-});
-
+}); 
 const scholarshipText = computed(() => {
-  const selectedScholarship = scholarships.find(s => s.id === form.scholar_id);
+  const selectedScholarship = props.scholarships.find(s => s.id === form.scholar_id);
   return selectedScholarship ? selectedScholarship.scholar_name : 'ทุนการศึกษา';
 });
 
+// ฟอร์แมตวันที่ที่เลือก
 const formattedSendDate = computed(() => {
   return form.send_date ? moment(form.send_date).format('DD MMMM YYYY, HH:mm') : 'ยังไม่ได้เลือกวันที่และเวลา';
 });
 
-
+// สร้างข้อความที่จะแสดง
 const previewMessage = computed(() => {
   return `
-📢 **แจ้งกำหนดการสัมภาษณ์นักศึกษาทุน**
-  
+📢 **แจ้งแก้ไขกำหนดการสัมภาษณ์นักศึกษาทุน**
 **ทุนการศึกษา:** ${scholarshipText.value}
-  
-⏳ **วันที่สัมภาษณ์:** ${formattedSendDate.value} น.
-  
+⏳ **วันที่สัมภาษณ์ใหม่:** ${formattedSendDate.value} น.
 📍 **สถานที่สัมภาษณ์:** ${form.location || 'ยังไม่ได้กำหนดสถานที่'}
-  
 📝 **กรุณามาในเวลาที่กำหนด**
-  
 หากมีข้อสงสัย โปรดติดต่อเจ้าหน้าที่
   `;
 });
 
+// ฟังก์ชันสำหรับการส่งข้อมูล
 const handleSubmit = () => {
   const message = previewMessage.value;
-
-  console.log("📤 ข้อมูลที่ส่งไปยัง publish_requests.createInfo:", form.data());
   if (!form.send_date || !form.scholar_id || !form.location) {
     Swal.fire({
       title: 'เกิดข้อผิดพลาด!',
@@ -110,30 +121,12 @@ const handleSubmit = () => {
     });
     return;
   }
+
   form.post(route('publish_requests.createInfo'), {
     onSuccess: (response) => {
       const NotiInfo = response.props.userLineNotify;
-      console.log('✅ การส่งข้อมูลสำเร็จ:', NotiInfo);
-
-      // if (!NotiInfo || NotiInfo.length === 0) {
-      //   console.error('❌ ไม่มี Line Notify tokens ในข้อมูล');
-      //   return;
-      // }
-
-      sendLineNotification(NotiInfo.map(notify => notify.user_id), message);
-      console.log("form", form.scholar_id)
-      form.post(route('publish_requests.store'), {
-        preserveScroll: true,
-        onSuccess: () => {
-          console.log('✅ บันทึกข้อมูลลง publish_requests.store สำเร็จ');
-        },
-        onError: (error) => {
-          console.error('❌ เกิดข้อผิดพลาดในการบันทึก publish_requests.store:', error);
-        }
-      });
-
+      sendLineNotification(NotiInfo.map(notify => notify.user_id), message); // ส่งการแจ้งเตือนผ่าน Line
       form.reset();
-
       Swal.fire({
         title: 'สำเร็จ!',
         text: 'การส่งข้อความสำเร็จ!',
@@ -157,14 +150,9 @@ const handleSubmit = () => {
   });
 };
 
+// ฟังก์ชันสำหรับการส่งการแจ้งเตือนผ่าน Line
 const sendLineNotification = (userIds, message) => {
   const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-  if (!token) {
-    console.error('CSRF token not found');
-    return;
-  }
-
   userIds.forEach(userId => {
     fetch(route('line.notify', { userId }), {
       method: 'POST',
@@ -183,6 +171,8 @@ const sendLineNotification = (userIds, message) => {
       });
   });
 };
+
+// ฟังก์ชันยกเลิกการดำเนินการ
 const handleCancel = () => {
   Swal.fire({
     title: 'คุณแน่ใจหรือไม่?',
@@ -195,26 +185,8 @@ const handleCancel = () => {
     cancelButtonColor: '#FF5733',
   }).then((result) => {
     if (result.isConfirmed) {
-      Swal.fire({
-        title: 'การยกเลิกสำเร็จ!',
-        text: '',
-        icon: 'success',
-        confirmButtonText: 'ตกลง',
-        confirmButtonColor: '#28a745'
-      });
       window.location.href = route('scholarship_applications.interview');
-    } else {
-      // หากยกเลิกการยกเลิก
-      Swal.fire({
-        title: 'การยกเลิกถูกยกเลิก',
-        text: '',
-        icon: 'info',
-        confirmButtonText: 'ตกลง',
-        confirmButtonColor: '#3498db'
-      });
     }
-
   });
 };
-
 </script>

@@ -97,14 +97,7 @@
             <InputLabel for="phone" value="หมายเลขโทรศัพท์" />
             <TextInput readonly id="phone" type="text" class="mt-1 block w-full" v-model="application.phone" required
               autocomplete="fname" />
-          </div>
-
-          <!-- Last Name Field -->
-          <div>
-            <InputLabel for="email" value="Email" />
-            <TextInput readonly id="email" type="text" class="mt-1 block w-full" v-model="application.email" required
-              autocomplete="lname" />
-          </div>
+          </div> 
         </div>
 
         <template v-if="application.scholar_type === '0'">

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -39,11 +40,35 @@ class CreateScholarshipApplicationsRequest extends FormRequest
             'leader_proof' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
             'gpa_image' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
             'id_card' => 'string',
-            'email' => 'string|email',
             'result' => 'string',
             'suggestions' => 'nullable|string',
             'interview_date' => 'nullable|date',
+            'score_by' => 'nullable|string',
             'interview_score' => 'nullable|numeric',
+            // ฟิลด์ใหม่สำหรับการยกเลิก  
+            'cancellation_reason' => 'nullable|string',
+            'cancel_status' => 'nullable|string|max:5',
+            'approved_by' => 'nullable|string|max:5',
+            'cancel_by' => 'nullable|string|max:5',
+            'cancel_date' => 'nullable|date',
+            'approved_date' => 'nullable|date',
+            'scholarship_contract' => 'nullable|date',
+            'limits' => 'nullable|numeric',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'gpax.string' => 'เกรดเฉลี่ยต้องเป็นตัวเลข',
+            'imagefile.mimes' => 'ไฟล์ต้องเป็นประเภท pdf, doc, docx, jpg, jpeg หรือ png เท่านั้น',
+            'imagefile.max' => 'ไฟล์ต้องมีขนาดไม่เกิน 2MB',
+            'interview_score.numeric' => 'คะแนนสัมภาษณ์ต้องเป็นตัวเลข',
+            'cancellation_reason.string' => 'เหตุผลในการยกเลิกต้องเป็นข้อความ',
+            'cancel_status.string' => 'สถานะการยกเลิกต้องเป็นข้อความ',
+            'approved_by.string' => 'ต้องระบุผู้อนุมัติเป็นข้อความ',
+            'cancel_by.string' => 'ต้องระบุผู้ยกเลิกเป็นข้อความ',
+            'cancel_by.scholarship_contract' => 'โปรดตรวจสอบรูปแบบของเอการ',
         ];
     }
 }

@@ -6,7 +6,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-
+import Swal from 'sweetalert2';
 const { props } = usePage();
 
 const form = useForm({
@@ -26,8 +26,7 @@ const form = useForm({
   award_certs: null,
   leader_proof: null,
   gpa_image: null,
-  id_card: props.auth.user.id_card || '',
-  email: props.auth.user.email || '',
+  id_card: props.auth.user.id_card || '', 
   result: '2',
   Interview_results: '2',
 
@@ -44,76 +43,76 @@ const errorMessages = ref({
   leader_proof: '',
   gpa_image: '',
 });
-const validateForm = () => {
-  // เคลียร์ข้อความข้อผิดพลาดก่อน
-  Object.keys(errorMessages.value).forEach(key => {
+const validateForm = () => {  
+  Object.keys(errorMessages.value).forEach((key) => {
     errorMessages.value[key] = '';
+  }); 
+  const validationFields = [
+    { key: 'type_ability', message: 'กรุณากรอกชื่อประเภทความสามารถ' },
+    { key: 'imagefile', message: 'กรุณาเพิ่มภาพถ่าย 1 นิ้ว' },
+    { key: 'gpa_image', message: 'กรุณากเพิ่มเอกสารแสดงผลการเรียน' },
+    { key: 'portfolio', message: 'กรุณาเพิ่ม portfolio' },
+    { key: 'conduct_cert', message: 'กรุณาเพิ่มเอกสารรับรองความประพฤติ' },
+    { key: 'fam_cert', message: 'กรุณาเพิ่มเอกสารรับรองสถานภาพครอบครัว' },
+    { key: 'award_certs', message: 'กรุณาเพิ่มเอกสารเอกสารรับรองรางวัล' },
+    { key: 'leader_proof', message: 'กรุณาเพิ่มเอกสารรับรองความเป็นผู้นำ' },
+    { key: 'gpax', message: 'กรุณากรอกผลการเรียน ( 5 ภาคเรียนหรือ 6 ภาคเรียน )' },
+  ]; 
+  validationFields.forEach(({ key, message }) => {
+    if (!form[key]) {
+      errorMessages.value[key] = message;
+    }
   });
-
-  if (!form.type_ability) {
-    errorMessages.value.type_ability = 'กรุณากรอกชื่อประเภทความสามารถ';
-  }
-  if (!form.imagefile) {
-    errorMessages.value.imagefile = 'กรุณาเพิ่มภาพถ่าย 1 นิ้ว';
-  }
-  if (!form.gpa_image) {
-    errorMessages.value.gpa_image = 'กรุณากเพิ่มเอกสารแสดงผลการเรียน';
-  }
-  if (!form.portfolio) {
-    errorMessages.value.portfolio = 'กรุณาเพิ่ม portfolio';
-  }
-  if (!form.conduct_cert) {
-    errorMessages.value.conduct_cert = 'กรุณาเพิ่มเอกสารรับรองความประพฤติ';
-  }
-  if (!form.fam_cert) {
-    errorMessages.value.fam_cert = 'กรุณาเพิ่มเอกสารรับรองสถานภาพครอบครัว ';
-  }
-  if (!form.award_certs) {
-    errorMessages.value.award_certs = 'กรุณาเพิ่มเอกสารเอกสารรับรองรางวัล';
-  }
-  if (!form.leader_proof) {
-    errorMessages.value.leader_proof = 'กรุณาเพิ่มเอกสารรับรองความเป็นผู้นำ';
-  }
-  if (!form.gpax) {
-    errorMessages.value.gpax = 'กรุณากรอกผลการเรียน ( 5 ภาคเรียนหรือ 6 ภาคเรียน )';
-  }
-
 };
 const handleFileChange = (event, field) => {
   form[field] = event.target.files[0];
   console.log(`File selected for ${field}:`, form[field]);
 };
-
 const handleSubmit = () => {
-  validateForm();
+  validateForm(); 
+  const hasErrors = Object.values(errorMessages.value).some(message => message !== '');
 
-  const formData = new FormData();
-
-  for (const key in form) {
-    if (form.hasOwnProperty(key) && form[key] !== null) {
-      formData.append(key, form[key]);
-    }
-  }
-
-  // ตรวจสอบข้อมูลใน FormData
-  formData.forEach((value, key) => {
-    console.log(key, value);
-  });
-
+  if (hasErrors) { 
+    Swal.fire({
+      title: 'เกิดข้อผิดพลาด!',
+      text: 'กรุณาตรวจสอบข้อมูลและลองใหม่',
+      icon: 'error',
+      confirmButtonText: 'ตกลง',
+      confirmButtonColor: '#dc3545',
+      timer: 2000,
+      timerProgressBar: true,
+      willClose: () => {
+      }
+    });
+    return;
+  } 
   form.post(route('scholarship_applications.store'), {
-    data: formData,
-    forceFormData: true,
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
     onSuccess: () => {
-      console.log('Form submitted successfully!');
+      Swal.fire({
+        title: 'สำเร็จ!',
+        text: 'ส่งฟอร์มเรียบร้อยแล้ว',
+        icon: 'success',
+        confirmButtonText: 'ตกลง',
+        confirmButtonColor: '#28a745',
+        timer: 2000,
+        timerProgressBar: true,
+      });
     },
     onError: (errors) => {
+      Swal.fire({
+        title: 'เกิดข้อผิดพลาด!',
+        text: 'กรุณาตรวจสอบข้อมูลและลองใหม่',
+        icon: 'error',
+        confirmButtonText: 'ตกลง',
+        confirmButtonColor: '#dc3545',
+        timer: 2000,
+        timerProgressBar: true,
+      });
       console.log('Form submission errors:', errors);
     },
   });
-};
+};  
+
 </script>
 
 <template>
@@ -156,12 +155,12 @@ const handleSubmit = () => {
             </div>
             <div>
               <InputLabel for="fname" value="ชื่อ" />
-              <TextInput id="fname" type="text" class="mt-1 block w-full" v-model="form.fname" required
+              <TextInput disabled id="fname" type="text" class="mt-1 block w-full" v-model="form.fname" required
                 autocomplete="fname" />
             </div>
             <div>
               <InputLabel for="lname" value="นามสกุล" />
-              <TextInput id="lname" type="text" class="mt-1 block w-full" v-model="form.lname" required
+              <TextInput disabled id="lname" type="text" class="mt-1 block w-full" v-model="form.lname" required
                 autocomplete="lname" />
             </div>
           </div>
@@ -169,21 +168,16 @@ const handleSubmit = () => {
           <div class="grid grid-cols-1 md:grid-cols-4 gap-6 w-full mt-3">
             <div>
               <InputLabel for="id_card" value="บัตรประชาชน" />
-              <TextInput type="text" id="id_card" class="mt-1 block w-full" v-model="form.id_card" />
+              <TextInput disabled type="text" id="id_card" class="mt-1 block w-full" v-model="form.id_card" />
             </div>
             <div>
               <InputLabel for="phone" value="หมายเลขโทรศัพท์" />
-              <TextInput id="phone" type="text" class="mt-1 block w-full" v-model="form.phone" required
+              <TextInput disabled id="phone" type="text" class="mt-1 block w-full" v-model="form.phone" required
                 autocomplete="phone" />
             </div>
             <div>
-              <InputLabel for="email" value="Email" />
-              <TextInput id="email" type="text" class="mt-1 block w-full" v-model="form.email" required
-                autocomplete="email" />
-            </div>
-            <div>
               <InputLabel for="gpax" value="ผลการเรียน ( 5 ภาคเรียนหรือ 6 ภาคเรียน )" />
-              <TextInput type="text" id="gpax" class="mt-1 block w-full" v-model="form.gpax" />
+              <TextInput  type="number" id="gpax" class="mt-1 block w-full" v-model="form.gpax" />
 
               <span v-if="errorMessages.gpax" class="text-red-600">{{ errorMessages.gpax }}</span>
             </div>
