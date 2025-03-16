@@ -14,6 +14,7 @@ import Table from "@/Components/Table.vue";
 import TableRow from "@/Components/TableRow.vue";
 import TableHeaderCell from "@/Components/TableHeaderCell.vue";
 import TableDataCell from "@/Components/TableDataCell.vue";
+import { router } from '@inertiajs/vue3'
 import InputError from '@/Components/InputError.vue';
 import moment from 'moment';
 const { hasRole } = usePermission();
@@ -112,37 +113,22 @@ const getTypeAbility = (typeAbility) => {
   };
   return typeAbilities[typeAbility] || '';
 };
-const showModal = ref(false); 
+
+const goToEditPage = (id) => {
+  router.get(route('publish_requests.EditInfo', id))
+}
+const showModal = ref(false);
+
+// Function to handle Modal open/close
 const openModal = () => {
   showModal.value = true;
 };
+
 const closeModal = () => {
   showModal.value = false;
-};  
- 
-const showModalEdit = ref(false);
-const selectedPublishId = ref(null);
-const publishData = ref(null);
-
-const openModalEdit = async (id) => {
-  selectedPublishId.value = id;
-  showModalEdit.value = true;
-
-  try {
-    const response = await form.get(route('publish_requests.EditInfo', { id }));
-    publishData.value = response.data;
-  } catch (error) {
-    console.error("Error fetching publish data", error);
-  }
 };
 
-const closeModalEdit = () => {
-  showModalEdit.value = false;
-  selectedPublishId.value = null;
-  publishData.value = null;
-};
 import PublishInfo from '@/Pages/Admin/Scholarships/ApplyScholars/PublishInfo.vue';
-import PublishInfoEdit from '@/Pages/Admin/Scholarships/ApplyScholars/PublishInfoEdit.vue';
 </script>
 <template>
 
@@ -194,11 +180,11 @@ import PublishInfoEdit from '@/Pages/Admin/Scholarships/ApplyScholars/PublishInf
               <PrimaryButton class="custom-button-danger" @click="handleDelete(publish.id)">
                 ลบ
               </PrimaryButton>
-              <PrimaryButton class="custom-button-warning" @click="openModalEdit(publish.id)">
+              <PrimaryButton class="custom-button-warning" @click="goToEditPage(publish.id)">
                 แก้ไข
               </PrimaryButton>
-            </div>
 
+            </div>
           </div>
         </div>
       </div>
@@ -279,11 +265,11 @@ import PublishInfoEdit from '@/Pages/Admin/Scholarships/ApplyScholars/PublishInf
       <PublishInfo />
     </div>
   </Modal>
-  <Modal :show="showModalEdit" @close="closeModalEdit">
+  <!-- <Modal :show="showModalEdit" @close="closeModalEdit">
     <div class="p-6">
       <PublishInfoEdit :publishId="selectedPublishId" :publishData="publishData" />
     </div>
-  </Modal>
+  </Modal> -->
 
 
 </template>
