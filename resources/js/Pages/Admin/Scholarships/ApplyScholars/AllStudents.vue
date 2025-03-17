@@ -592,6 +592,15 @@ const confirmCancellation = () => {
           </TableDataCell>
         </TableRow>
       </Table>
+      <tbody v-if="!props.applications.some(application => application.user_id === props.currentUser.id)"
+        class="bg-white divide-y divide-gray-200">
+        <tr class="flex justify-center items-center">
+          <td colspan="5" class="px-6 py-4 text-md text-gray-700 text-center">
+            ไม่มีข้อมูลการสมัคร
+          </td>
+        </tr>
+      </tbody>
+
     </div>
     <Modal v-if="showModal" @close="closeModal">
       <template v-slot:header>ยืนยันการเลือกนักศึกษา</template>

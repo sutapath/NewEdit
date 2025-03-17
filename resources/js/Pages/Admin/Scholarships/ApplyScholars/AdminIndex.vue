@@ -105,8 +105,10 @@ const getTypeAbility = (typeAbility) => {
             <th class="px-6 py-3 text-left text-md  font-medium text-white uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
+
         <tbody class="bg-white divide-y divide-gray-200" v-if="props.applications.length > 0">
           <template v-for="(application) in props.applications" :key="application.id">
+
             <tr v-if="application.user_id === props.currentUser.id">
               <td class="px-6 py-4 whitespace-nowrap text-md text-gray-700">
                 <template v-if="application.title === '0'">นาย</template>
@@ -154,6 +156,15 @@ const getTypeAbility = (typeAbility) => {
           </template>
 
         </tbody>
+        <tbody v-if="!props.applications.some(application => application.user_id === props.currentUser.id)"
+          class="bg-white divide-y divide-gray-200">
+          <tr>
+            <td colspan="5" class="px-6 py-4 text-md text-gray-700 text-center">
+              ไม่มีข้อมูลการสมัคร
+            </td>
+          </tr>
+        </tbody>
+
 
         <tbody class="bg-white divide-y divide-gray-200" v-for="(application, index) in props.applications"
           :key="application.id">

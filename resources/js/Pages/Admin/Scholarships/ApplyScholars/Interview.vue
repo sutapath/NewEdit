@@ -9,7 +9,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { usePermission } from '@/composables/permissions';
 import { format, addYears } from 'date-fns';
 import TextInput from '@/Components/TextInput.vue';
-import Swal from 'sweetalert2'; 
+import Swal from 'sweetalert2';
 import Table from "@/Components/Table.vue";
 import TableRow from "@/Components/TableRow.vue";
 import TableHeaderCell from "@/Components/TableHeaderCell.vue";
@@ -28,12 +28,12 @@ const props = defineProps({
   currentUser: Object,
   scholarships: Array,
   publicInfos: Array
-}); 
+});
 const currentPage = ref(1);
 const perPage = ref(10);
 const totalItems = ref(props.applications.length);
 const filteredApplications = computed(() => {
-  if (!props.applications) return []; 
+  if (!props.applications) return [];
   const results = props.applications.filter(application => {
     const matchesScholar = !selectedScholarId.value || application.scholar_id === selectedScholarId.value;
     const search = searchQuery.value ? searchQuery.value.toLowerCase() : "";
@@ -46,7 +46,7 @@ const filteredApplications = computed(() => {
   const order = ['2', '1', '0'];
   results.sort((a, b) => {
     const indexA = order.indexOf(a.Interview_results.toString());
-    const indexB = order.indexOf(b.Interview_results.toString()); 
+    const indexB = order.indexOf(b.Interview_results.toString());
     const finalIndexA = indexA === -1 ? order.length : indexA;
     const finalIndexB = indexB === -1 ? order.length : indexB;
     return finalIndexA - finalIndexB;
@@ -57,7 +57,7 @@ const filteredApplications = computed(() => {
   }
   const start = (currentPage.value - 1) * perPage.value;
   return results.slice(start, start + perPage.value);
-}); 
+});
 const totalPages = computed(() => {
   return Math.ceil(totalItems.value / perPage.value);
 });
@@ -70,9 +70,9 @@ const formatYear = (date) => {
     console.error('Invalid date format', e);
     return '';
   }
-};  
+};
 const handleSubmit = (applicationId, interviewScore) => {
-  console.log('Submitting for application ID:', applicationId); 
+  console.log('Submitting for application ID:', applicationId);
   if (interviewScore > 100) {
     console.log('Error: interview_score cannot be greater than 100');
     form.errors.interview_score = "คะแนนสัมภาษณ์ต้องไม่เกิน 100";
@@ -101,7 +101,7 @@ const getScholarType = (scholarType) => {
     1: 'ทุนงดเว้นค่าธรรมเนียมการศึกษา'
   };
   return scholarTypes[scholarType] || ' ';
-}; 
+};
 const getTypeAbility = (typeAbility) => {
   const typeAbilities = {
     1: 'ประเภททุนเรียนดี',
@@ -189,7 +189,6 @@ import PublishInfo from '@/Pages/Admin/Scholarships/ApplyScholars/PublishInfo.vu
         </div>
       </div>
     </div>
-
     <div class="max-w-full sm:max-w-7xl mx-auto sm:px-6 lg:px-8 bg-white sm:rounded-xl overflow-x-auto">
       <Table class="whitespace-nowrap">
         <TableRow header>
@@ -235,7 +234,17 @@ import PublishInfo from '@/Pages/Admin/Scholarships/ApplyScholars/PublishInfo.vu
             </Link>
           </TableDataCell>
         </TableRow>
+
       </Table>
+      <tbody v-if="!props.applications.some(application => application.user_id === props.currentUser.id)"
+        class="bg-white divide-y divide-gray-200">
+        <tr class="flex justify-center items-center">
+          <td colspan="5" class="px-6 py-4 text-md text-gray-700 text-center">
+            ไม่มีข้อมูลการสมัคร
+          </td>
+        </tr>
+      </tbody>
+
       <div class="flex justify-end items-center w-full mt-4 space-x-4">
         <div class="flex items-center">
           <label for="perPage" class="text-sm font-medium text-gray-700 mr-2">ข้อมูลต่อหน้า</label>

@@ -19,8 +19,8 @@
                                     :active="route().current('users.index')">
                                     ผู้ใช้งาน
                                 </NavLink>
-                                <NavLink v-if="hasRole('scholar')" :href="route('scholarship_applications.index')"
-                                    :active="route().current('scholarship_applications.index')">
+                                <NavLink v-if="hasRole('scholar')" :href="route('scholarship_applications.AllStudents')"
+                                    :active="route().current('scholarship_applications.AllStudents')">
                                     ข้อมูลทุนการศึกษา
                                 </NavLink>
                                 <div class="flex justify-center items-center"
@@ -61,16 +61,16 @@
                                                 :class="{ 'text-blue-500 font-bold text-sm': isActiveRoute('scholarship_applications.interview') }">
                                                 สัมภาษณ์
                                             </ResponsiveNavLink>
-                                            <ResponsiveNavLink v-if="hasRole('admin')"
-                                                :href="route('scholarship_applications.scholarstudents')"
-                                                :class="{ 'text-blue-500 font-bold text-sm': isActiveRoute('scholarship_applications.scholarstudents') }">
+                                            <ResponsiveNavLink v-if="hasRole('admin') || hasRole('officer') || hasRole('member') || hasRole('student')"
+                                                :href="route('scholarship_applications.AllStudents')"
+                                                :class="{ 'text-blue-500 font-bold text-sm': isActiveRoute('scholarship_applications.AllStudents') }">
                                                 นักศึกษาทุน
                                             </ResponsiveNavLink>
-                                            <ResponsiveNavLink v-if="hasRole('student') || hasRole('member') || hasRole('admin')" 
+                                            <!-- <ResponsiveNavLink v-if="hasRole('student') || hasRole('member') || hasRole('admin')" 
                                                 :href="route('scholarship_applications.AllStudents')"
                                                 :class="{ 'text-blue-500 font-bold text-sm': isActiveRoute('scholarship_applications.AllStudents') }">
                                                 ข้อมูลนักศึกษาทุน
-                                            </ResponsiveNavLink>
+                                            </ResponsiveNavLink> -->
                                         </template>
                                     </Dropdown>
                                 </div>
@@ -209,14 +209,14 @@
                                             สัมภาษณ์
                                         </DropdownLink>
 
-                                        <DropdownLink v-if="hasRole('admin')"
-                                            :href="route('scholarship_applications.scholarstudents')">
+                                        <DropdownLink v-if="hasRole('admin') || hasRole('officer') || hasRole('member') || hasRole('student')"
+                                            :href="route('scholarship_applications.AllStudents')">
                                             นักศึกษาทุน
                                         </DropdownLink>
-                                        <DropdownLink v-if="hasRole('scholar') "
-                                            :href="route('scholarship_applications.index')">
+                                        <!-- <DropdownLink v-if="hasRole('scholar') "
+                                            :href="route('scholarship_applications.AllStudents')">
                                             ข้อมูลทุนการศึกษา
-                                        </DropdownLink>
+                                        </DropdownLink> -->
 
                                         <div class="px-4 py-2 text-blue-800 font-bold text-sm"
                                             v-if="hasRole('admin') || hasRole('officer') || hasRole('scholar') || hasRole('intlscholar')">
@@ -355,11 +355,11 @@
                             สัมภาษณ์
                         </ResponsiveNavLink>
 
-                        <ResponsiveNavLink v-if="hasRole('admin')"
-                            :href="route('scholarship_applications.scholarstudents')">
+                        <ResponsiveNavLink v-if="hasRole('admin') || hasRole('officer') || hasRole('member') || hasRole('student')"
+                            :href="route('scholarship_applications.AllStudents')">
                             นักศึกษาทุน
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink v-if="hasRole('scholar') " :href="route('scholarship_applications.index')">
+                        <ResponsiveNavLink v-if="hasRole('scholar') " :href="route('scholarship_applications.AllStudents')">
                             ข้อมูลทุนการศึกษา
                         </ResponsiveNavLink>
 
@@ -452,21 +452,15 @@ import { usePermission } from "@/composables/permissions";
 
 const showingNavigationDropdown = ref(false);
 const { hasRole } = usePermission();
-import { computed } from 'vue';
-
-// ฟังก์ชันเพื่อตรวจสอบ route ว่าเป็น active อยู่หรือไม่
+import { computed } from 'vue'; 
 const isActiveRoute = (routeName) => {
     return route().current(routeName);
-};
-
-// ตรวจสอบ dropdown ทุนการศึกษา active หรือไม่
+}; 
 const isScholarshipDropdownActive = computed(() => {
     return route().current('scholarships.index') || route().current('applications.index') ||
         route().current('scholarship_applications.indexadmin') || route().current('scholarship_applications.interview') ||
-        route().current('scholarship_applications.scholarstudents');
-});
-
-// ตรวจสอบ dropdown กิจกรรม active หรือไม่
+        route().current('scholarship_applications.AllStudents');
+}); 
 const isActivityDropdownActive = computed(() => {
     return route().current('activities.index') || route().current('activity_registrations.index') ||
         route().current('activity_saves.index');
