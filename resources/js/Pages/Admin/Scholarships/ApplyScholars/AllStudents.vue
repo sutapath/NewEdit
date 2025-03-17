@@ -562,19 +562,19 @@ const confirmCancellation = () => {
               </div>
               <div v-else-if="application.cancel_status == 0"
                 class="bg-red-300 text-gray-900 rounded-xl p-2 athiti-medium cursor-pointer"
-                @click="navigateToAddContract(application.id)">
+                >
                 ยกเลิกการรับทุน
               </div>
               <div v-else-if="application.cancel_status == 2"
                 class="bg-yellow-300 text-gray-900 rounded-xl p-2 athiti-medium cursor-pointer"
-                @click="navigateToAddContract(application.id)">
+                >
                 ดำเนินการแก้ไข
               </div>
 
               <p v-else class="bg-gray-400 text-white py-1 px-3 rounded-xl cursor-not-allowed">
                 -
               </p>
-              <PrimaryButton v-if="application && application.scholarship_contract"
+              <PrimaryButton v-if="application && application.scholarship_contract && application.cancel_status != 0"
                 @click="navigateToAddContract(application.id)" class="bg-blue-500 py-1 mx-2 text-white rounded-xl px-2">
                 ดู
               </PrimaryButton>
@@ -592,7 +592,8 @@ const confirmCancellation = () => {
           </TableDataCell>
         </TableRow>
       </Table>
-      <tbody v-if="!props.applications.some(application => application.user_id === props.currentUser.id)"
+      <tbody
+        v-if="(props.applications.some(application => application.user_id != props.currentUser.id) && (hasRole('student') || hasRole('member')))"
         class="bg-white divide-y divide-gray-200">
         <tr class="flex justify-center items-center">
           <td colspan="5" class="px-6 py-4 text-md text-gray-700 text-center">
@@ -600,6 +601,7 @@ const confirmCancellation = () => {
           </td>
         </tr>
       </tbody>
+
 
     </div>
     <Modal v-if="showModal" @close="closeModal">
