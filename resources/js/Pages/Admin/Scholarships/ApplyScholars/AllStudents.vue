@@ -561,13 +561,11 @@ const confirmCancellation = () => {
                 ลงนามสำเร็จ
               </div>
               <div v-else-if="application.cancel_status == 0"
-                class="bg-red-300 text-gray-900 rounded-xl p-2 athiti-medium cursor-pointer"
-                >
+                class="bg-red-300 text-gray-900 rounded-xl p-2 athiti-medium cursor-pointer">
                 ยกเลิกการรับทุน
               </div>
               <div v-else-if="application.cancel_status == 2"
-                class="bg-yellow-300 text-gray-900 rounded-xl p-2 athiti-medium cursor-pointer"
-                >
+                class="bg-yellow-300 text-gray-900 rounded-xl p-2 athiti-medium cursor-pointer">
                 ดำเนินการแก้ไข
               </div>
 
@@ -593,7 +591,7 @@ const confirmCancellation = () => {
         </TableRow>
       </Table>
       <tbody
-        v-if="(props.applications.some(application => application.user_id != props.currentUser.id) && (hasRole('student') || hasRole('member')))"
+        v-if="props.applications == []"
         class="bg-white divide-y divide-gray-200">
         <tr class="flex justify-center items-center">
           <td colspan="5" class="px-6 py-4 text-md text-gray-700 text-center">
