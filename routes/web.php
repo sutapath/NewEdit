@@ -82,6 +82,7 @@ Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.
 Route::put('/users/update-roles', [UserController::class, 'updateRoles'])->name('users.updateRoles');
 Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
 Route::get('/users/{user}/edit-scholar', [UserController::class, 'editscholar'])->name('users.editscholar');
+    Route::get('/editRole', [UserController::class, 'editscholar2'])->name('users.editscholar2');
 Route::put('/users/{user}/update-scholar', [UserController::class, 'updatescholar'])->name('users.updatescholar');
 Route::get('/scholarships', [ScholarshipController::class, 'index'])->name('scholarships.index');
 Route::get('/scholarships/create', [ScholarshipController::class, 'create'])->name('scholarships.create');

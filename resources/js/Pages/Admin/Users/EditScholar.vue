@@ -51,7 +51,7 @@ const uniqueRoles = computed(() => {
 const submit = () => {
   form.roles = uniqueRoles.value;
 
-  if (form.roles.length === 0) { 
+  if (form.roles.length === 0) {
     Swal.fire({
       icon: 'error',
       title: 'ข้อผิดพลาด',
@@ -59,12 +59,22 @@ const submit = () => {
     });
     return;
   }
+
+  // Log ข้อมูลก่อนส่ง
+  console.log("ข้อมูลที่ส่งไปยัง users.updatescholar:", {
+    userId: props.user?.id,
+    data: {
+      ...form.data,
+      roles: form.roles,
+    }
+  });
+
   form.put(route("users.updatescholar", props.user?.id), {
     data: {
       ...form.data,
       roles: form.roles,
     },
-    onSuccess: () => { 
+    onSuccess: () => {
       Swal.fire({
         icon: 'success',
         title: 'สำเร็จ!',
@@ -88,6 +98,7 @@ const submit = () => {
     }
   });
 };
+
 
 watch(() => form.roles, (newRoles) => {
   if (newRoles.length > 0) {

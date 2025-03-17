@@ -186,7 +186,15 @@ public function editscholar(User $user): Response
         'user' => UserResource::make($user),
         'roles' => RoleResource::collection(Role::all()),
     ]);
-}
+} 
+  public function editscholar2(User $user): Response
+    {
+        $user->load(['roles']);
+        return Inertia::render('Admin/Scholarships/AllStudents', [
+            'user' => UserResource::make($user),
+            'roles' => RoleResource::collection(Role::all()),
+        ]);
+    }
     public function updatescholar(Request $request, User $user): RedirectResponse
     {
         $request->validate([

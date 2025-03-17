@@ -278,8 +278,7 @@ const previewMessage2 = computed(() => {
 หากมีข้อสงสัยหรือต้องการคำแนะนำ กรุณาติดต่อเจ้าหน้าที่
     `;
 });
-
-const submitCheck = () => {
+const submitCheck = async () => {
   const formData = {
     cancel_status: req_data.value.cancel_status,
     contract_suggestions: req_data.value.contract_suggestions,
@@ -288,11 +287,31 @@ const submitCheck = () => {
   cancelDate.setHours(0, 0, 0, 0);
 
   const cancelDateString = cancelDate.toISOString().split("T")[0];
-  // ตรวจสอบว่า status เป็น 1 หรือไม่ ถ้าใช่ให้เพิ่มค่า
+
+  // ตรวจสอบว่า cancel_status เป็น "1" และเพิ่มค่าที่จำเป็น
   if (req_data.value.cancel_status == "1") {
     formData.approved_date = cancelDateString;
     formData.approved_by = `${props.user.fname} ${props.user.lname}`;
-  }
+  } 
+  const roleData = req_data.value.cancel_status == "1"
+    ? [{ id: 3, name: "scholar" }]
+    : [
+      req_data.value.scholar_type == "0"
+        ? { id: 5, name: "member" }
+        : { id: 4, name: "student" }
+    ];
+
+  console.log("Role Data:", roleData); // Log ข้อมูล roleData เพื่อดูว่าเป็นอะไร
+
+  const userId = req_data.value.user_id || props.user?.id;
+  console.log("User ID:", userId);
+  console.log("User Data:", req_data.value);
+  console.log("Role Data:", roleData);
+  axios.put(route("users.updatescholar", { user: userId }), {
+    user: req_data.value,
+    roles: roleData,
+  });
+
   console.log("data", formData);
   axios
     .put(
@@ -300,26 +319,26 @@ const submitCheck = () => {
       formData
     )
     .then((response) => {
-      ContractModel.value = false; // Close the modal
+      ContractModel.value = false; // ปิด Modal
       Swal.fire({
         title: "สำเร็จ!",
         text: "ผลการตรวจสอบถูกส่งแล้ว",
         icon: "success",
-        confirmButtonColor: "#28a745", // Green button color (HEX)
+        confirmButtonColor: "#28a745",
       });
       sendLineNotification(req_data.value.id, previewMessage2.value);
     })
     .catch((error) => {
-      // Handle error
       contractReview.value.errors = error.response.data.errors || {};
       Swal.fire({
         title: "เกิดข้อผิดพลาด!",
         text: "ไม่สามารถส่งผลการตรวจสอบได้",
         icon: "error",
-        confirmButtonColor: "#dc3545", // Red button color (HEX)
+        confirmButtonColor: "#dc3545",
       });
     });
 };
+
 
 const sendLineNotification = (userId, message) => {
   const token = document
@@ -348,6 +367,75 @@ const sendLineNotification = (userId, message) => {
     .catch((error) => {
       console.error("Error:", error);
     });
+};
+const confirmCancellation = () => {
+  Swal.fire({
+    title: "ยืนยันการยกเลิกทุน?",
+    text: "กรุณากรอกเหตุผลในการยกเลิกทุนการศึกษา",
+    icon: "warning",
+    input: "textarea",
+    inputPlaceholder: "กรอกเหตุผลที่นี่...",
+    inputAttributes: {
+      "aria-label": "กรอกเหตุผลที่นี่",
+    },
+    showCancelButton: true,
+    confirmButtonText: "ยืนยัน",
+    cancelButtonText: "ยกเลิก",
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    preConfirm: (reason) => {
+      if (!reason) {
+        Swal.showValidationMessage("กรุณากรอกเหตุผลก่อนกดยืนยัน");
+      }
+      return reason;
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const cancelDate = new Date();
+      cancelDate.setHours(0, 0, 0, 0);
+
+      const cancelDateString = cancelDate.toISOString().split("T")[0];
+      const formData = {
+        cancel_status: "0",
+        cancellation_reason: result.value,
+        cancel_date: cancelDateString,
+        cancel_by: `${props.user.fname} ${props.user.lname}`,
+      };
+
+      console.log(formData);
+
+      axios
+        .put(
+          route("scholarship_application.check", { id: req_data.value.id }),
+          formData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          console.log("อัปเดตข้อมูลสำเร็จ!", response.data);
+          Swal.fire({
+            icon: "success",
+            title: "อัปเดตสำเร็จ!",
+            text: "ข้อมูลได้รับการบันทึกแล้ว",
+            confirmButtonColor: "#28a745",
+            confirmButtonText: "ตกลง",
+          });
+        })
+        .catch((error) => {
+          console.error("เกิดข้อผิดพลาด:", error.response?.data || error.message);
+          Swal.fire({
+            icon: "error",
+            title: "เกิดข้อผิดพลาด!",
+            text: "ไม่สามารถอัปเดตข้อมูลได้ กรุณาลองใหม่",
+            confirmButtonColor: "#dc3545",
+            confirmButtonText: "ตกลง",
+          });
+        });
+    }
+  });
 };
 </script>
 <template>
@@ -396,7 +484,7 @@ const sendLineNotification = (userId, message) => {
         </div>
       </div>
     </div>
-    <!-- <pre>{{ props.user }}</pre> -->
+    <!-- <pre>{{ props.roles }}</pre> -->
     <div class="max-w-full sm:max-w-7xl mx-auto sm:px-6 lg:px-8 bg-white sm:rounded-xl overflow-x-auto">
       <Table class="whitespace-nowrap">
         <TableRow header>
@@ -420,10 +508,10 @@ const sendLineNotification = (userId, message) => {
           <TableDataCell>{{ index + 1 }}</TableDataCell>
           <TableDataCell>
             <span :class="{
-                'text-green-600 athiti-semibold': application.Interview_results == '1',
-                'text-red-600 athiti-semibold': application.Interview_results == '0',
-                'text-gray-600 athiti-semibold': application.Interview_results == '2',
-              }">
+              'text-green-600 athiti-semibold': application.Interview_results == '1',
+              'text-red-600 athiti-semibold': application.Interview_results == '0',
+              'text-gray-600 athiti-semibold': application.Interview_results == '2',
+            }">
               {{
               application.Interview_results == "1"
               ? "ผ่านการพิจารณา"
@@ -500,6 +588,7 @@ const sendLineNotification = (userId, message) => {
           <TableDataCell>
             <div class="text-gray-800 font-semibold">{{ application.cancel_by }}</div>
             <div class="text-gray-500">{{ application.cancel_date }}</div>
+            <div class="text-red-500">{{ application.cancellation_reason }}</div>
           </TableDataCell>
         </TableRow>
       </Table>
@@ -527,6 +616,7 @@ const sendLineNotification = (userId, message) => {
               class="mt-1 block w-full bg-white rounded-xl border-gray-300">
               <option value="1">ผ่าน</option>
               <option value="2">แก้ไข</option>
+              <option value="0">ยกเลิกการรับทุน</option>
             </select>
           </div>
           <!-- <pre>{{ req_data.cancel_status }}</pre>
@@ -537,10 +627,16 @@ const sendLineNotification = (userId, message) => {
               v-model="req_data.contract_suggestions" />
           </div>
         </div>
-        <PrimaryButton v-if="hasRole('admin') || hasRole('officer')"
-          class="mt-4 mb-3 w-full bg-green-500 text-white py-2 rounded-xl" @click="submitCheck">
-          ส่งผลการตรวจสอบ
-        </PrimaryButton>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-6">
+
+          <PrimaryButton v-if="hasRole('admin') || hasRole('officer')"
+            class="mt-4 mb-3 w-full bg-green-500 text-white py-2 rounded-xl" @click="submitCheck">
+            ส่งผลการตรวจสอบ
+          </PrimaryButton>
+          <PrimaryButton class="mt-4 mb-3 w-full bg-red-500 text-white py-2 rounded-xl" @click="confirmCancellation">
+            ยกเลิกทุนการศึกษา
+          </PrimaryButton>
+        </div>
 
         <embed v-if="ContractFile" :src="ContractFile" width="100%" height="600px" />
       </div>

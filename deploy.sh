@@ -1,4 +1,2 @@
-  
-"C:/xampp/php/php" artisan config:cache  
-echo "Caching routes..."  
-"C:/xampp/php/php" artisan route:cache  
+"C:\xampp\php\php.exe" artisan config:cache   
+"C:\xampp\php\php.exe" artisan serve  

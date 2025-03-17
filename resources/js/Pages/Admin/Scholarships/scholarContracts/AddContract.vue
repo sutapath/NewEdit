@@ -16,11 +16,7 @@
           <PrimaryButton class="custom-button-danger" @click="goBack">
             กลับ
           </PrimaryButton>
-          <PrimaryButton
-            :class="{ 'opacity-25': form.processing }"
-            @click="handleSubmit"
-            class="custom-button-success"
-          >
+          <PrimaryButton :class="{ 'opacity-25': form.processing }" @click="handleSubmit" class="custom-button-success">
             บันทึก
           </PrimaryButton>
         </div>
@@ -35,61 +31,41 @@
             <!-- อัพโหลดไฟล์ -->
             <div class="mb-4">
               <InputLabel for="scholarship_contract" value="อัพโหลดไฟล์" />
-              <TextInput
-                id="scholarship_contract"
-                type="file"
+              <TextInput id="scholarship_contract" type="file"
                 class="mt-1 block w-full border-gray-300 py-1 px-2 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                @change="handleFileChange($event, 'scholarship_contract')"
-              />
-              <div
-                v-if="form.errors.scholarship_contract"
-                class="text-red-500 text-sm mt-1"
-              >
+                @change="handleFileChange($event, 'scholarship_contract')" />
+              <div v-if="form.errors.scholarship_contract" class="text-red-500 text-sm mt-1">
                 กรุณาเพิ่มข้อมูล
               </div>
             </div>
-        <div class="mb-4">
-  <InputLabel for="contract_suggestions" value="ข้อเสนอแนะ" />
-  <p id="contract_suggestions" class="mt-1 block w-full bg-gray-100 p-2 rounded">
-    {{ props.application?.contract_suggestions }}
-  </p>
-</div>
+            <div class="mb-4">
+              <InputLabel for="contract_suggestions" value="ข้อเสนอแนะ" />
+              <p id="contract_suggestions" class="mt-1 block w-full bg-gray-100 p-2 rounded">
+                {{ props.application?.contract_suggestions }}
+              </p>
+            </div>
 
           </div>
         </form>
         <div class="mb-4">
           <label class="block text-gray-700">ไฟล์ที่อัพโหลด:</label>
           <div v-if="form.scholarship_contract || scholarship_contract">
-            <span v-if="!props.application?.scholarship_contract" class="text-green-500"
-              >ไฟล์ที่เลือก:
-              {{ form.scholarship_contract?.name || "ไม่มีชื่อไฟล์" }}</span
-            >
+            <span v-if="!props.application?.scholarship_contract" class="text-green-500">ไฟล์ที่เลือก:
+              {{ form.scholarship_contract?.name || "ไม่มีชื่อไฟล์" }}</span>
             <div v-if="filePreviewUrl">
               <div v-if="isImage(filePreviewUrl)">
                 <img :src="filePreviewUrl" alt="Preview" class="mt-2 max-w-full h-auto" />
               </div>
               <div v-else-if="isPdf(filePreviewUrl)">
-                <iframe
-                  :src="filePreviewUrl"
-                  class="mt-2 w-full h-64"
-                  title="PDF Preview"
-                ></iframe>
+                <iframe :src="filePreviewUrl" class="mt-2 w-full h-64" title="PDF Preview"></iframe>
               </div>
             </div>
             <div v-else-if="scholarship_contract">
               <div v-if="isImage(scholarship_contract)">
-                <img
-                  :src="scholarship_contract"
-                  alt="File Preview"
-                  class="mt-2 max-w-full h-auto"
-                />
+                <img :src="scholarship_contract" alt="File Preview" class="mt-2 max-w-full h-auto" />
               </div>
               <div v-else-if="isPdf(scholarship_contract)">
-                <iframe
-                  :src="scholarship_contract"
-                  class="mt-2 w-full h-64"
-                  title="PDF Preview"
-                ></iframe>
+                <iframe :src="scholarship_contract" class="mt-2 w-full h-64" title="PDF Preview"></iframe>
               </div>
             </div>
           </div>
@@ -97,18 +73,10 @@
             <span class="text-red-500">ไม่มีไฟล์</span>
           </div>
           <div v-if="props.application?.scholarship_contract" class="mt-4">
-            <PrimaryButton
-              class="custom-button-primary mr-3"
-              :href="exampleDocumentLink"
-              target="_blank"
-            >
+            <PrimaryButton class="custom-button-primary mr-3" :href="exampleDocumentLink" target="_blank">
               ดูตัวอย่างเอกสาร
             </PrimaryButton>
-            <PrimaryButton
-              class="custom-button-primary mr-3"
-              :href="downloadDocumentLink"
-              download
-            >
+            <PrimaryButton class="custom-button-primary mr-3" :href="downloadDocumentLink" download>
               ดาวน์โหลดเอกสาร
             </PrimaryButton>
             <button @click="handleDelete" class="custom-button-danger">ลบไฟล์</button>
@@ -137,7 +105,6 @@ const props = defineProps({
 
 const form = useForm({
   scholarship_contract: null,
-  data_id: props.application?.id || null,
   data_id: props.application?.id || null, 
 });
 
@@ -301,6 +268,25 @@ const confirmCancellation = () => {
         cancel_date: cancelDateString,
         cancel_by: `${props.user.fname} ${props.user.lname}`,
       };
+      const roleData =
+        formData.cancel_status == "0"
+          ? [
+            props.application.scholar_type == "0"
+              ? { id: 5, name: "member" }
+              : { id: 4, name: "student" },
+          ]
+          : [];
+
+      const userId = props.user?.id;
+      console.log("User ID:", userId);
+      console.log("User Data:", formData);
+      console.log("Role Data:", roleData);
+      if (roleData) {
+        axios.put(route("users.updatescholar", { user: userId }), {
+          user: props.user,
+          roles: roleData,
+        });
+      }
 
       console.log(formData);
 
