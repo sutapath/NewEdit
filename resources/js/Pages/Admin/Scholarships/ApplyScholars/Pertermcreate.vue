@@ -7,7 +7,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Scholarship from '@/Layouts/Scholarship.vue';
-
+import Swal from 'sweetalert2';
 const { props } = usePage();
 
 const form = useForm({
@@ -119,38 +119,74 @@ const selectedFaculty = ref('');
 const branches = ref([]);
 watch(selectedFaculty, (newFaculty) => {
     branches.value = faculties[newFaculty] || [];
-});
+}); 
+const handleSubmit = () => {  
+  validateForm();  
 
-const handleSubmit = () => {
-  validateForm();
+  const formData = new FormData();  
 
-  const formData = new FormData();
+  for (const key in form) {  
+    if (form.hasOwnProperty(key) && form[key] !== null) {  
+      formData.append(key, form[key]);  
+    }  
+  }  
 
-  for (const key in form) {
-    if (form.hasOwnProperty(key) && form[key] !== null) {
-      formData.append(key, form[key]);
-    }
-  }
+  form.post(route('scholarship_applications.store'), {  
+    data: formData,  
+    forceFormData: true,  
+    headers: {  
+      'Content-Type': 'multipart/form-data',  
+    },  
+    onSuccess: () => {  
+      Swal.fire({  
+        icon: 'success',  
+        title: 'สำเร็จ!',  
+        text: 'ส่งข้อมูลเรียบร้อยแล้ว',  
+        confirmButtonColor: '#28a745',  
+        cancelButtonColor: '#d33',  
+        showCancelButton: true,  
+        confirmButtonText: 'ตกลง',  
+        cancelButtonText: 'ปิด',  
+      });  
+    },  
+    onError: (errors) => {  
+      
+      let errorMessage = 'กรุณาตรวจสอบข้อมูลอีกครั้ง';  
+    if (errors.response) {  
+        console.log('Error Response:', errors.response);  
 
-  // ตรวจสอบข้อมูลใน FormData
-  formData.forEach((value, key) => {
-    console.log(key, value);
-  });
+        if (errors.response.status === 422) {  
+          // เช็คข้อความข้อผิดพลาด  
+          if (errors.response.data.error === 'คุณได้สมัครทุนนี้ไปแล้ว') {  
+            errorMessage = 'คุณได้สมัครทุนนี้ไปแล้ว กรุณาตรวจสอบสถานะของคุณ';  
+          } else {  
+            const errorList = Object.values(errors.response.data.errors)  
+              .flat()  
+              .join('\n');  
+            errorMessage = `ข้อผิดพลาด:\n${errorList}`;  
+          }  
+        } else if (errors.response.status === 500) {  
+          errorMessage = 'เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง';  
+        } else {  
+          errorMessage = `เกิดข้อผิดพลาด: ${errors.response.statusText}`;  
+        }  
+      }  
 
-  form.post(route('scholarship_applications.store'), {
-    data: formData,
-    forceFormData: true,
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    onSuccess: () => {
-      console.log('Form submitted successfully!');
-    },
-    onError: (errors) => {
-      console.log('Form submission errors:', errors);
-    },
-  });
-};
+      // แสดงข้อความแจ้งเตือน  
+      Swal.fire({  
+        icon: 'error',  
+        title: 'เกิดข้อผิดพลาด!',  
+        text: errors.error || errorMessage,  
+        confirmButtonColor: '#dc3545',  
+        cancelButtonColor: '#6c757d',  
+        showCancelButton: true,  
+        confirmButtonText: 'ลองอีกครั้ง',  
+        cancelButtonText: 'ปิด',  
+      });  
+    },  
+  });  
+};  
+
 const validateForm = () => {
     Object.keys(errorMessages.value).forEach(key => {
         errorMessages.value[key] = '';
@@ -201,10 +237,10 @@ const validateForm = () => {
 <template>
     <AuthenticatedLayout>
         <div class="py-2">
-            <div class="max-w-full sm:max-w-7xl mx-auto px-4 mt-10">
+            <div class="max-w-full sm:max-w-7xl mx-auto px-4 mt-6">
                 <div class="py-6">
                     <div class="max-w-full mx-auto sm:px-6 lg:px-8">
-                        <Scholarship />
+                        <!-- <Scholarship /> -->
                     </div>
                 </div>
             </div>

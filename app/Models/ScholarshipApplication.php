@@ -42,6 +42,14 @@ class ScholarshipApplication extends Model
         'interview_date',
         'interview_score',
         'Interview_results',
+        'cancellation_reason',
+        'cancel_status',       
+        'approved_by',         
+        'cancel_by',           
+        'cancel_date',         
+        'approved_date',       
+        'scholarship_contract',
+        'limits',              
     ];
 
     public function scholarship()

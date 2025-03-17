@@ -110,8 +110,14 @@ Route::get('/admin/AllStudents', [ScholarshipApplicationsController::class, 'All
 Route::get('/apply-scholars/admin-index', [ScholarshipApplicationsController::class, 'index'])->name('applications.index'); // อันนี้
 Route::get('/user/activity-saves/{user_id}', [ScholarshipApplicationsController::class, 'userSaves'])->name('activity_saves.user');
 Route::get('/admin/report', [ScholarshipApplicationsController::class, 'secoundreport'])->name('scholarship_applications.secoundreport');
+Route::post('/Update/interviewResults', [ScholarshipApplicationsController::class, 'interviewResults'])->name('scholarship_applications.interviewResults');
+Route::get('/ContractsDetail/{application}', [ScholarshipApplicationsController::class, 'ContractsDetail'])->name('scholarship_applications.ContractsDetail');
+Route::get('/AddContract/{application}', [ScholarshipApplicationsController::class, 'AddContract'])->name('scholarship_applications.AddContract');
+    // ใช้ PUT หรือ PATCH สำหรับการอัปเดต
+Route::post('/ContractsSave/{id}', [ScholarshipApplicationsController::class, 'Contracts'])->name('Contracts.Save');
+Route::post('/deleteContracts/{id}', [ScholarshipApplicationsController::class, 'deleteContracts'])->name('Contracts.deleteContracts');
 
-Route::get('activities', [ActivityInformationController::class, 'index'])->name('activities.index');
+    Route::get('activities', [ActivityInformationController::class, 'index'])->name('activities.index');
 Route::get('activities/create', [ActivityInformationController::class, 'create'])->name('activities.create');
 Route::post('activities', [ActivityInformationController::class, 'store'])->name('activities.store');
 Route::get('activities/{activity}/edit', [ActivityInformationController::class, 'edit'])->name('activities.edit');
@@ -161,17 +167,17 @@ Route::delete('/user_line_notify/{id}', [UserLineNotifyController::class, 'destr
 Route::post('/line-notify/{userId}', [LineNotifyController::class, 'sendNotification'])->name('line.notify');
 Route::post('/line-notify', [LineNotifyController::class, 'notify'])->name('notify');
 
-Route::post('/line-notify/send-to-all', [LineNotifyController::class, 'sendNotificationAll'])->name('line-notify.send-to-all');
-Route::get('/docs_sends/{id}', [PublishRequestController::class, 'show']);
-Route::post('/publish_requests/createInfo', [PublishRequestController::class, 'createInfo'])->name('publish_requests.createInfo');
-Route::get('/publish_requests/EditInfo/{id}', [PublishRequestController::class, 'EditInfo'])->name('publish_requests.EditInfo');
-// Route::post('/publish_requests/show', [PublishRequestController::class, 'show'])->name('publish_requests.show');
-Route::post('/publish_requests/create', [PublishRequestController::class, 'create'])->name('publish_requests.create');
-Route::post('/publish_requests/sends', [PublishRequestController::class, 'store'])->name('publish_requests.store');
- 
+    Route::post('/line-notify/send-to-all', [LineNotifyController::class, 'sendNotificationAll'])->name('line-notify.send-to-all');
+    Route::get('/docs_sends/{id}', [PublishRequestController::class, 'show']);
+    Route::post('/publish_requests/createInfo', [PublishRequestController::class, 'createInfo'])->name('publish_requests.createInfo');
+    Route::get('/publish_requests/EditInfo/{id}', [PublishRequestController::class, 'EditInfo'])->name('publish_requests.EditInfo');
+    // Route::post('/publish_requests/show', [PublishRequestController::class, 'show'])->name('publish_requests.show');
+    Route::post('/publish_requests/create', [PublishRequestController::class, 'create'])->name('publish_requests.create');
+    Route::post('/publish_requests/sends', [PublishRequestController::class, 'store'])->name('publish_requests.store');
 
 
-Route::get('/students', [StudentController::class, 'index'])->name('students.index');
+
+    Route::get('/students', [StudentController::class, 'index'])->name('students.index');
 Route::post('/importUsers', [UserController::class, 'importUsers'])->name('students.importUsers');
 Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
 Route::post('/students', [StudentController::class, 'store'])->name('students.store');

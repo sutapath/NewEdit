@@ -1,7 +1,8 @@
 <template>
   <AuthenticatedLayout>
+
     <Head title="Create Activity" />
- 
+
     <div class="max-w-7xl mx-auto py-4 mt-20 px-10">
       <div class="px-4 text-white dark:text-gray-100 flex justify-between items-center">
         <div class="py-2 text-gray-800 rounded-t-lg text-xl font-bold">
@@ -11,22 +12,24 @@
           <hr class="border-t border-gray-300" />
         </div>
         <div class="flex justify-end space-x-4">
-          <PrimaryButton   :href="route('activity_saves.index')" class="custom-button-danger">
-                กลับ
-              </PrimaryButton>
-              <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing" @click="handleSubmit" class="custom-button-success">
-                บันทึก
-              </PrimaryButton>
+          <PrimaryButton :href="route('activity_saves.index')" class="custom-button-danger">
+            กลับ
+          </PrimaryButton>
+          <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing" @click="handleSubmit"
+            class="custom-button-success">
+            บันทึก
+          </PrimaryButton>
         </div>
       </div>
     </div>
     <div class="max-w-7xl mx-auto">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 w-full">
             <div class="mb-4">
               <InputLabel for="title" value="คำนำหน้า" />
-              <select id="title" v-model="form.title" class="mt-1 block w-full bg-white rounded-xl border-gray-300" required>
+              <select id="title" v-model="form.title" class="mt-1 block w-full bg-white rounded-xl border-gray-300"
+                required>
                 <option value="0">นาย (Mr.)</option>
                 <option value="1">นาง (Mrs.)</option>
                 <option value="2">นางสาว (Miss)</option>
@@ -43,18 +46,19 @@
               <TextInput id="lname" readonly type="text" class="mt-1 block w-full" v-model="form.lname" required />
             </div>
           </div>
-
+          <pre></pre>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-6 w-full mt-3">
             <div class="mb-4">
               <InputLabel for="activity_name" value="ชื่อกิจกรรม" />
-              <TextInput id="activity_name" type="text" class="mt-1 block w-full" v-model="form.activity_name" required />
+              <TextInput id="activity_name" type="text" class="mt-1 block w-full" v-model="form.activity_name"
+                required />
               <div v-if="form.errors.activity_name" class="text-red-500 text-sm mt-1">{{ 'กรุณากรอกชื่อกิจกรรม'}}</div>
             </div>
 
             <div class="mb-4">
               <InputLabel for="date" value="วันที่" />
               <TextInput id="date" type="date" class="mt-1 block w-full" v-model="form.date" required />
-              <div v-if="form.errors.date" class="text-red-500 text-sm mt-1">{{  'กรุณากรอกวันที่' }}</div>
+              <div v-if="form.errors.date" class="text-red-500 text-sm mt-1">{{ 'กรุณากรอกวันที่' }}</div>
             </div>
 
             <div class="mb-4">
@@ -65,24 +69,19 @@
 
             <div class="mb-4">
               <InputLabel for="file" value="อัพโหลดไฟล์" />
-              <TextInput
-                id="file"
-                type="file"
+              <TextInput id="file" type="file"
                 class="mt-1 block w-full border-gray-300 py-1 px-2 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                @change="handleFileChange($event, 'file')" 
-              />
-              <div v-if="form.errors.file" class="text-red-500 text-sm mt-1">{{  'กรุณาเพิ่มหลักฐานการเข้าร่วมกิจกรรม' }}</div>
+                @change="handleFileChange($event, 'file')" />
+              <div v-if="form.errors.file" class="text-red-500 text-sm mt-1">{{ 'กรุณาเพิ่มหลักฐานการเข้าร่วมกิจกรรม' }}
+              </div>
             </div>
           </div>
 
           <div class="mb-4">
             <InputLabel for="description" value="คำอธิบายกิจกรรม" />
-            <textarea
-              id="description"
+            <textarea id="description"
               class="mt-1 block w-full border-gray-300 py-1 px-2 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              v-model="form.description"
-              rows="4"
-            ></textarea>
+              v-model="form.description" rows="4"></textarea>
             <div v-if="form.errors.description" class="text-red-500 text-sm mt-1">{{ 'กรุณากรอกคำอธิบาย' }}</div>
           </div>
 
@@ -90,13 +89,13 @@
             <div class="mb-4">
               <InputLabel for="institution" value="หน่วยงาน" />
               <TextInput id="institution" type="text" class="mt-1 block w-full" v-model="form.institution" />
-              <div v-if="form.errors.institution" class="text-red-500 text-sm mt-1">{{  'กรุณาเพิ่มหน่อยงาน' }}</div>
+              <div v-if="form.errors.institution" class="text-red-500 text-sm mt-1">{{ 'กรุณาเพิ่มหน่อยงาน' }}</div>
             </div>
 
             <div class="mb-4">
               <InputLabel for="launch" value="เริ่มกิจกรรม" />
               <TextInput id="launch" type="time" class="mt-1 block w-full" v-model="form.launch" />
-              <div v-if="form.errors.launch" class="text-red-500 text-sm mt-1">{{  'กรุณาเพิ่มเวลาเริ่มงาน' }}</div>
+              <div v-if="form.errors.launch" class="text-red-500 text-sm mt-1">{{ 'กรุณาเพิ่มเวลาเริ่มงาน' }}</div>
             </div>
 
             <div class="mb-4">
@@ -110,8 +109,16 @@
               <TextInput id="location" type="text" class="mt-1 block w-full" v-model="form.location" />
               <div v-if="form.errors.location" class="text-red-500 text-sm mt-1">{{ 'กรุณาเพิ่มสถานที่' }}</div>
             </div>
+            <div class="mb-4">
+              <InputLabel value="ชั่วโมง" />
+              <p class="mt-1 block w-full p-2 border rounded bg-gray-100 text-gray-700">
+                {{ props.allactivities.hours }}
+              </p>
+            </div>
+
           </div>
         </form>
+        <!-- <pre>{{props.allactivities}}</pre> -->
       </div>
     </div>
   </AuthenticatedLayout>
@@ -126,7 +133,9 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
   auth: Object,
-  regis_id: String
+  regis_id: String,
+  activities:Object,
+  allactivities:Object,
 });
 
 // Initialize the form
@@ -143,8 +152,9 @@ const form = useForm({
   launch: '',
   end: '',
   location: '',
+  hours: props.allactivities.hours,
   years: '',
-  result: 2,
+  result: 4,
   regis_id: props.regis_id,
 });
 

@@ -70,13 +70,10 @@ class PublishRequestController extends Controller
                     ->toArray();
             }
         }
-
         return Inertia::render('Admin/DocsSends/LineNotifyforRequireDocs', [
             'userLineNotify' => array_merge([], ...$userLineNotify),
-
         ]);
     }
-
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -85,9 +82,11 @@ class PublishRequestController extends Controller
             'type' => 'sometimes|integer',
             'scholar_id' => 'sometimes|integer',
             'location' => 'sometimes|String',
-        ]); 
+        ]);
+
         $document = DocumentRequest::where('scholar_id', $request->scholar_id)->first();
-        if ($document) { 
+
+        if ($document) {
             $document->update([
                 'document_type' => $request->document_type,
                 'send_date' => $request->send_date,
@@ -95,7 +94,7 @@ class PublishRequestController extends Controller
                 'location' => $request->location,
             ]);
             $message = 'Document request updated successfully.';
-        } else { 
+        } else {
             DocumentRequest::create([
                 'document_type' => $request->document_type,
                 'send_date' => $request->send_date,
@@ -104,17 +103,37 @@ class PublishRequestController extends Controller
                 'scholar_id' => $request->scholar_id,
             ]);
             $message = 'Document request created successfully.';
-        } 
-        return redirect()->route('docs_sends.index')->with('success', $message);
+        }
+
+        return back()->with('success', $message);
     }
+
     public function show($id)
     {
         $publish = DocumentRequest::findOrFail($id);
-
-        return Inertia::render('Admin/Scholarships/ApplyScholars/PublishInfoEdit', [
+        $scholarships = Scholarship::all();
+        $approvedApplications = ScholarshipApplication::where('Interview_results', '1')
+            ->where('scholar_id', $publish->scholar_id)
+            ->get();
+        $userIds = $approvedApplications->pluck('user_id')->map(fn($id) => (int) $id)->toArray();
+        $userLineNotify = UserLineNotify::whereIn('user_id', $userIds)
+            ->whereNotNull('line_notify_token')
+            ->get()
+            ->toArray();
+        return Inertia::render('Admin/DocsSends/LineNotifyforEdit', [
             'documentRequest' => $publish,
+            'scholarships' => $scholarships,
+            'approvedApplications' => $approvedApplications,
+            'userLineNotify' => $userLineNotify,
         ]);
     }
+    public function update(Request $request, $id)
+    { 
+        $publish = DocumentRequest::findOrFail($id); 
+        $publish->update($request->all()); 
+        return redirect()->route('docs_sends.index');
+    }
+
     public function EditInfo($id): Response
     {
         $documentRequest = DocumentRequest::find($id);
@@ -127,32 +146,18 @@ class PublishRequestController extends Controller
         $userLineNotify = UserLineNotify::whereIn('user_id', $userIds)
             ->whereNotNull('line_notify_token')
             ->get()
-            ->toArray();
-
-        // เพิ่ม dd() เพื่อดูข้อมูล
-        dd([
+            ->toArray();  
+        return Inertia::render('Admin/Scholarships/ApplyScholars/PublishInfoEdit', [
             'scholarships' => $scholarships,
             'approvedApplications' => $approvedApplications,
             'userLineNotify' => $userLineNotify,
             'documentRequest' => $documentRequest,
         ]);
-
-        return Inertia::render('Admin/Scholarships/ApplyScholars/PublishInfoEdit', [
-            'scholarships' => $scholarships,
-            'approvedApplications' => $approvedApplications,
-            'userLineNotify' => $userLineNotify,
-            'documentRequest' => $documentRequest, // ต้องแน่ใจว่า documentRequest ส่งไป
-        ]);
     }
-
-
-
     public function destroy($id)
     {
         $documentRequest = DocumentRequest::findOrFail($id);
-
         $documentRequest->delete();
-
         return redirect()->back();
     }
 }

@@ -25,7 +25,7 @@
     <div class="max-w-7xl mx-auto px-5 mt-5">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <form @submit.prevent="handleSubmit">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 w-full mb-5">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-5">
             <div class="mb-4">
               <InputLabel for="activity_name" value="ชื่อกิจกรรม" />
               <TextInput 
@@ -82,21 +82,19 @@
                 {{  'กรุณากรอกผู้จัดกิจกรรม' }}
               </div>
             </div>
-          </div> 
-
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 w-full">
-            <div class="mb-4">
-              <InputLabel for="description" value="คำอธิบาย" />
-              <textarea
-              id="description"
-              class="mt-1 block w-full border rounded-md border-gray-300 focus:border-gray-500 focus:ring focus:ring-gray-200 focus:ring-opacity-50"
-              v-model="form.description"
-            ></textarea>
-              <div v-if="form.errors.description" class="text-red-500 text-sm mt-1">
-                {{  'กรุณากรอกคำอธิบาย' }}
+             <div class="mb-4">
+              <InputLabel for="regis_due" value="วันที่หมดเขตลงทะเบียน" />
+              <TextInput 
+                id="regis_due" 
+                type="date" 
+                class="mt-1 block w-full" 
+                v-model="form.regis_due" 
+                required 
+              />
+              <div v-if="form.errors.regis_due" class="text-red-500 text-sm mt-1">
+                {{  'กรุณากรอกวันที่หมดเขตลงทะเบียน' }}
               </div>
             </div>
-
             <div class="mb-4">
               <InputLabel for="limits" value="จำนวนที่จำกัด" />
               <TextInput 
@@ -110,6 +108,11 @@
                 {{  'กรุณากรอกจำนวนที่จำกัด' }}
               </div>
             </div>
+          </div> 
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 w-full">
+       
+
 
             <div class="mb-4">
               <InputLabel for="regis_due" value="วันที่หมดเขตลงทะเบียน" />
@@ -124,6 +127,18 @@
                 {{  'กรุณากรอกวันที่หมดเขตลงทะเบียน' }}
               </div>
             </div>
+<div class="mb-4">
+  <InputLabel for="hours" value="ชั่วโมง" />
+  <TextInput 
+    id="hours" 
+    type="number" 
+    class="mt-1 block w-full" 
+    v-model="form.hours" 
+  />
+  <div v-if="form.errors.hours" class="text-red-500 text-sm mt-1">
+    {{ 'กรุณากรอกจำนวนชั่วโมง' }}
+  </div>
+</div>
 
             <div class="mb-4">
               <InputLabel for="link" value="ลิงค์" />
@@ -135,6 +150,17 @@
               />
               <div v-if="form.errors.link" class="text-red-500 text-sm mt-1">
                 {{  'กรุณากรอกลิงค์ถ้ามี' }}
+              </div>
+            </div>
+                 <div class="mb-4">
+              <InputLabel for="description" value="คำอธิบาย" />
+              <textarea
+              id="description"
+              class="mt-1 block w-full border rounded-md border-gray-300 focus:border-gray-500 focus:ring focus:ring-gray-200 focus:ring-opacity-50"
+              v-model="form.description"
+            ></textarea>
+              <div v-if="form.errors.description" class="text-red-500 text-sm mt-1">
+                {{  'กรุณากรอกคำอธิบาย' }}
               </div>
             </div>
           </div> 
@@ -163,6 +189,7 @@ const form = useForm({
   limits: '',
   regis_due: '', 
   link: '', 
+  hours: '',
   user_id: props.auth.user.id,
 }); 
 

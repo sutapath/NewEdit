@@ -29,6 +29,7 @@
       <TableHeaderCell class="w-1/6">สถานที่จัด</TableHeaderCell>
       <TableHeaderCell class="w-1/6">คำอธิบาย</TableHeaderCell>
       <TableHeaderCell class="w-1/4 text-center">จำนวนผู้เข้าร่วม</TableHeaderCell>
+      <TableHeaderCell class="w-1/4 text-center">ชั่วโมง</TableHeaderCell>
       <TableHeaderCell class="w-32 text-center">จัดการ</TableHeaderCell>
     </TableRow>
   </thead>
@@ -43,6 +44,7 @@
       <TableDataCell v-if="activity.id !== 1" class="text-center">{{ activity.limits }}</TableDataCell>
       <TableDataCell v-else class="text-center">-</TableDataCell>
 
+      <TableDataCell>{{ activity.hours }}</TableDataCell>
       <TableDataCell class="text-center">
         <div class="flex justify-center space-x-2">
           <template v-if="hasRole('admin') || hasRole('officer')">

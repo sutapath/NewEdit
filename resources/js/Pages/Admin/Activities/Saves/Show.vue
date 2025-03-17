@@ -62,12 +62,12 @@
           </div>
 
           <!-- Hours field -->
-          <div class="mb-4">
+          <!-- <div class="mb-4">
             <InputLabel for="hours" value="จำนวนชั่วโมง" />
             <TextInput id="hours" type="number" class="mt-1 block w-full" v-model="form.hours"
               placeholder="กรุณาระบุจำนวนชั่วโมง" />
             <InputError class="mt-2" :message="form.errors.hours" />
-          </div>
+          </div> -->
 
           <!-- <div class="mb-4">
             <InputLabel for="check_date" value="วันที่" />
@@ -114,7 +114,7 @@
               <p class="text-gray-600 dark:text-gray-300 mb-3 text-xl">สถานที่ : <span class="font-semibold">{{
                   save.location }}</span></p>
               <p class="text-gray-600 dark:text-gray-300 mb-3 text-xl">วันที่ : <span class="font-semibold">{{
-                  formatDate(save.date) }}</span> ( {{ formatTime(save.launch) }} - {{ formatTime(save.end) }} )</p>
+                  formatDate(save.date) }}</span> ( {{ formatTime(save.launch) }} - {{ formatTime(save.end) }} )   {{ save.hours }} ชั่วโมง</p>
               <p class="text-gray-600 dark:text-gray-300 mb-3 text-xl">{{ save.description }}</p>
 
               <div v-if="(save.suggestions && (save.result === '0' || save.result === '4'))"
@@ -161,6 +161,7 @@ const form = useForm({
   end: save.end || '',
   location: save.location || '',
   result: save.result || 2,
+  suggestions: save.suggestions,
 });
 
 const showCheck = ref(false);
@@ -239,31 +240,31 @@ const checkDate = convertToThaiBuddhistYear(currentDate);
 
 // ใช้ form จาก useForm แทน formData
 const formData = ref({
-  result: save.result,
-  suggestions: save.suggestions,
+  result: form.result,
+  suggestions: form.suggestions,
   check_date: checkDate,
-  title: save.title || '',
-  hours: save.hours,
-  fname: save.fname || '',
-  lname: save.lname || '',
+  // title: save.title || '',
+  // // hours: save.hours,
+  // fname: save.fname || '',
+  // lname: save.lname || '',
 });
 import Swal from 'sweetalert2';
 
 const handleSubmit = () => {
-if (!form.hours && form.result != 4) {
-  Swal.fire({
-    icon: 'warning',
-    title: 'กรุณาระบุจำนวนชั่วโมง',
-    showConfirmButton: true,
-    confirmButtonText: 'ตกลง',
-    confirmButtonColor: '#FF6347' // ✅ เพิ่มสีปุ่มที่นี่
-  }).then(() => {
-    showCheck.value = true;
-  });
-  return;
-}
+// if (!form.hours && form.result != 4) {
+//   Swal.fire({
+//     icon: 'warning',
+//     title: 'กรุณาระบุจำนวนชั่วโมง',
+//     showConfirmButton: true,
+//     confirmButtonText: 'ตกลง',
+//     confirmButtonColor: '#FF6347' // ✅ เพิ่มสีปุ่มที่นี่
+//   }).then(() => {
+//     showCheck.value = true;
+//   });
+//   return;
+// }
 
-if (form.result && form.result == 4 && form.suggestions != 4) {
+if (form.result && form.result == 4 && !form.suggestions) {
   Swal.fire({
     icon: 'warning',
     title: 'กรุณาระบุข้อเสนอแนะ',
@@ -274,10 +275,7 @@ if (form.result && form.result == 4 && form.suggestions != 4) {
     showCheck.value = true;
   });
   return;
-}
-
-
-
+} 
   form.put(route('activity_saves.updatecheck', { save: props.save.id }), {
     onSuccess: () => {
       Swal.fire({

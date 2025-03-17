@@ -1,59 +1,72 @@
 <template>
-  <div class="w-full max-w-7xl p-6 mx-auto">
-    <form @submit.prevent="handleSubmit" class="flex flex-col">
-      <!-- Scholarship Selection -->
-      <div class="mt-4">
-        <InputLabel for="docType" class="block text-gray-700 text-md font-semibold mb-2">
-          ทุนการศึกษาทั้งหมด:
-        </InputLabel>
-        <select v-model="form.scholar_id" id="docType"
-          class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-md">
-          <option v-for="scholar in scholarships" :key="scholar.id" :value="scholar.id">
-            {{ scholar.scholar_name }}
-          </option>
-          <option v-if="scholarships.length === 0" disabled>ไม่มีข้อมูลทุนการศึกษา</option>
-        </select>
+
+  <Head title="Create Document" />
+
+  <AuthenticatedLayout class="mtb">
+    <div class="max-w-7xl mx-auto py-4 mt-20 px-10">
+      <div class="px-4 text-white dark:text-gray-100 flex justify-between items-center">
+        <div class="py-2 text-gray-800 rounded-t-lg text-xl font-bold">
+          เพิ่มเอกสาร
+        </div>
+        <div class="flex-1 mr-3 ml-3">
+          <hr class="border-t border-gray-300" />
+        </div>
+        <div class="flex justify-end space-x-4">
+          <Link :href="route('docs_sends.index')" class="custom-button-danger">กลับ</Link>
+        </div>
       </div>
+    </div>
+    <div class="w-full max-w-7xl p-6 mx-auto">
+      <form @submit.prevent="handleSubmit" class="flex flex-col">
+ 
+        <div class="mt-4">
+          <InputLabel for="docType" class="block text-gray-700 text-md font-semibold mb-2">
+            ทุนการศึกษาทั้งหมด:
+          </InputLabel>
+          <select v-model="form.scholar_id" id="docType"
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-md bg-gray-100 cursor-not-allowed"
+            disabled>
+            <option v-for="scholar in scholarships" :key="scholar.id" :value="scholar.id">
+              {{ scholar.scholar_name }}
+            </option>
+          </select>
 
-      <!-- Document Request Preview -->
-      <pre>{{ documentRequest }}</pre>
+        </div> 
+        <div class="mt-4">
+          <InputLabel for="sendDate" class="block text-gray-700 text-md font-semibold mb-2">
+            วันที่สัมภาษณ์:
+          </InputLabel>
+          <TextInput v-model="form.send_date" id="sendDate" type="datetime-local"
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-md">
+          </TextInput>
+        </div>
 
-      <!-- Interview Date -->
-      <div class="mt-4">
-        <InputLabel for="sendDate" class="block text-gray-700 text-md font-semibold mb-2">
-          วันที่สัมภาษณ์:
-        </InputLabel>
-        <TextInput v-model="form.send_date" id="sendDate" type="datetime-local"
-          class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-md">
-        </TextInput>
-      </div>
+        <!-- Interview Location -->
+        <div class="mt-4">
+          <InputLabel for="location" class="block text-gray-700 text-md font-semibold mb-2">
+            สถานที่สัมภาษณ์:
+          </InputLabel>
+          <TextInput v-model="form.location" id="location" type="text"
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-md">
+          </TextInput>
+        </div>
 
-      <!-- Interview Location -->
-      <div class="mt-4">
-        <InputLabel for="location" class="block text-gray-700 text-md font-semibold mb-2">
-          สถานที่สัมภาษณ์:
-        </InputLabel>
-        <TextInput v-model="form.location" id="location" type="text"
-          class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-md">
-        </TextInput>
-      </div>
-
-      <!-- Preview Message -->
-      <div class="mt-6">
-        <InputLabel class="block text-gray-700 text-md font-semibold mb-2">ข้อความตัวอย่าง:</InputLabel>
-        <textarea readonly
-          class="mt-1 block w-full p-4 border border-gray-300 rounded-md text-md bg-gray-100 resize-none" rows="10">
+        <!-- Preview Message -->
+        <div class="mt-6">
+          <InputLabel class="block text-gray-700 text-md font-semibold mb-2">ข้อความตัวอย่าง:</InputLabel>
+          <textarea readonly
+            class="mt-1 block w-full p-4 border border-gray-300 rounded-md text-md bg-gray-100 resize-none" rows="10">
           {{ previewMessage }}
         </textarea>
-      </div>
+        </div> 
+        <div class="mt-6 flex justify-end space-x-4">
+          <button type="submit" class="custom-button-success">ส่งข้อความ</button>
+          <button type="button" @click="handleCancel" class="custom-button-danger">ยกเลิก</button>
+        </div>
+      </form>
+    </div>
+  </AuthenticatedLayout>
 
-      <!-- Submit & Cancel Buttons -->
-      <div class="mt-6 flex justify-end space-x-4">
-        <button type="submit" class="custom-button-success">ส่งข้อความ</button>
-        <button type="button" @click="handleCancel" class="custom-button-danger">ยกเลิก</button>
-      </div>
-    </form>
-  </div>
 </template>
 <script setup>
 import { ref, computed } from 'vue';
@@ -63,6 +76,7 @@ import { useForm, usePage } from '@inertiajs/vue3';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import Swal from 'sweetalert2';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const props = defineProps({
   scholarships: {
@@ -78,25 +92,22 @@ const props = defineProps({
     default: () => []
   }
 });
-
 console.log(props)
 const form = useForm({
-  scholar_id: props.scholarships.length > 0 ? props.scholarships[0].id : '',
-  send_date: '',
-  type: 0,
-  location: '',
-}); 
+  id: props.documentRequest.id || '',
+  scholar_id: props.documentRequest.scholar_id || '',
+  send_date: props.documentRequest.send_date || '',
+  type: props.documentRequest.type || 0,
+  location: props.documentRequest.location || '',
+});
 const scholarshipText = computed(() => {
   const selectedScholarship = props.scholarships.find(s => s.id === form.scholar_id);
   return selectedScholarship ? selectedScholarship.scholar_name : 'ทุนการศึกษา';
-});
-
-// ฟอร์แมตวันที่ที่เลือก
+});  
 const formattedSendDate = computed(() => {
-  return form.send_date ? moment(form.send_date).format('DD MMMM YYYY, HH:mm') : 'ยังไม่ได้เลือกวันที่และเวลา';
+  return form.send_date ? moment(form.send_date).format('DD/MM/YYYY') : 'ยังไม่ได้เลือกวันที่';
 });
 
-// สร้างข้อความที่จะแสดง
 const previewMessage = computed(() => {
   return `
 📢 **แจ้งแก้ไขกำหนดการสัมภาษณ์นักศึกษาทุน**
@@ -106,9 +117,7 @@ const previewMessage = computed(() => {
 📝 **กรุณามาในเวลาที่กำหนด**
 หากมีข้อสงสัย โปรดติดต่อเจ้าหน้าที่
   `;
-});
-
-// ฟังก์ชันสำหรับการส่งข้อมูล
+}); 
 const handleSubmit = () => {
   const message = previewMessage.value;
   if (!form.send_date || !form.scholar_id || !form.location) {
@@ -122,7 +131,7 @@ const handleSubmit = () => {
     return;
   }
 
-  form.post(route('publish_requests.createInfo'), {
+  form.post(route('publish_requests.store'), {
     onSuccess: (response) => {
       const NotiInfo = response.props.userLineNotify;
       sendLineNotification(NotiInfo.map(notify => notify.user_id), message); // ส่งการแจ้งเตือนผ่าน Line
@@ -148,9 +157,9 @@ const handleSubmit = () => {
       });
     },
   });
+
 };
 
-// ฟังก์ชันสำหรับการส่งการแจ้งเตือนผ่าน Line
 const sendLineNotification = (userIds, message) => {
   const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   userIds.forEach(userId => {
@@ -170,9 +179,7 @@ const sendLineNotification = (userIds, message) => {
         console.error('Error for userId', userId, ':', error);
       });
   });
-};
-
-// ฟังก์ชันยกเลิกการดำเนินการ
+}
 const handleCancel = () => {
   Swal.fire({
     title: 'คุณแน่ใจหรือไม่?',

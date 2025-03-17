@@ -81,6 +81,7 @@ class ActivityInformationController extends Controller
             'limits' => 'required|integer',
             'regis_due' => 'required|date',
             'link' => 'nullable|string',
+            'hours' => 'nullable|integer',
             'user_id' => 'exists:users,id',
             // 'hours' => 'required|integer',
         ]);

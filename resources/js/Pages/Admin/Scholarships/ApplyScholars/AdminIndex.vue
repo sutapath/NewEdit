@@ -144,13 +144,15 @@ const getTypeAbility = (typeAbility) => {
               </td>
             </tr>
           </template>
-          <template v-if="!props.applications.some(application => application.user_id === props.currentUser.id)">
+          <template v-if="['student', 'member'].includes(props.currentUser.role) &&
+            !props.applications.some(application => application.user_id === props.currentUser.id)">
             <tr>
               <td colspan="5" class="px-6 py-4 text-md text-gray-700 text-center">
                 ไม่มีข้อมูลการสมัคร
               </td>
             </tr>
           </template>
+
         </tbody>
 
         <tbody class="bg-white divide-y divide-gray-200" v-for="(application, index) in props.applications"

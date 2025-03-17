@@ -47,12 +47,13 @@ class CreateScholarshipApplicationsRequest extends FormRequest
             'interview_score' => 'nullable|numeric',
             // ฟิลด์ใหม่สำหรับการยกเลิก  
             'cancellation_reason' => 'nullable|string',
-            'cancel_status' => 'nullable|string|max:5',
-            'approved_by' => 'nullable|string|max:5',
-            'cancel_by' => 'nullable|string|max:5',
+            'contract_suggestions' => 'nullable|string',
+            'cancel_status' => 'nullable|string|',
+            'approved_by' => 'nullable|string|',
+            'cancel_by' => 'nullable|string|',
             'cancel_date' => 'nullable|date',
             'approved_date' => 'nullable|date',
-            'scholarship_contract' => 'nullable|date',
+            'scholarship_contract' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
             'limits' => 'nullable|numeric',
         ];
     }

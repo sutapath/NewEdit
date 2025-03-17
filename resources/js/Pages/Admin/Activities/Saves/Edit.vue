@@ -128,8 +128,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue'; 
-import PrimaryButton from '@/Components/PrimaryButton.vue';
- 
+import PrimaryButton from '@/Components/PrimaryButton.vue'; 
 const props = defineProps({
   activities: Array,
   auth: Object,
@@ -151,10 +150,11 @@ const form = useForm({
   launch: '',
   end: '',
   location: props.save.location || '',
-  result: '2',
+  result: '4',
   suggestions: '',
   years: props.save.years || '',
 });
+
  
 
 const handleFileChange = (event, field) => {

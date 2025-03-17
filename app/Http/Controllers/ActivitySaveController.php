@@ -27,17 +27,19 @@ class ActivitySaveController extends Controller
         ]);
     }
     public function create(Request $request): Response
-    {
-        $regis_id = $request->input('regis_id');
-        // $this->authorize('create', ActivitySave::class);
+    { 
+        $regis_id = $request->input('regis_id'); 
+        $activityRegister = ActivityRegister::where('id', $regis_id)->first();
+        $activityInformation = ActivityInformation::where('id', $activityRegister->activity_id)->first();
 
-        $activities = ActivityRegister::all();
-
+        // $allactivities = ActivitySave::where('id', $activityInformation->id)->get();
         return Inertia::render('Admin/Activities/Saves/Create', [
-            'regis_id' => $regis_id,
-            'activities' => $activities,
+            'regis_id' => $regis_id, 
+            'allactivities' => $activityInformation,
         ]);
     }
+
+
 
     public function creates(Request $request): Response
     {
@@ -125,7 +127,7 @@ class ActivitySaveController extends Controller
             'result' => 'string|max:5',
             'suggestions' => 'nullable|string',
             'check_date' => 'nullable|date',
-            'hours' => 'integer',
+            // 'hours' => 'integer',
         ]);
 
         try {
@@ -133,7 +135,7 @@ class ActivitySaveController extends Controller
                 'result' => $request->result,
                 'suggestions' => $request->suggestions,
                 'check_date' => $request->check_date,
-                'hours' => $request->hours,
+                // 'hours' => $request->hours,
             ]);
 
             return redirect()->route('activity_saves.show', ['save' => $save->id])
@@ -235,8 +237,8 @@ class ActivitySaveController extends Controller
             'description' => 'nullable|string',
             'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
             'institution' => 'string|max:255',
-            'launch' => 'date_format:H:i',
-            'end' => 'date_format:H:i',
+            'launch' => 'nullable|date_format:H:i',
+            'end' => 'nullable|date_format:H:i',
             'location' => 'string',
             'years' => 'string',
             'result' => 'string|max:5',

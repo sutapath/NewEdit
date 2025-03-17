@@ -77,11 +77,8 @@ const formatDate = (date) => {
   const thaiYear = moment(date).year() + 543;
   return moment(date).format(`DD/MM/${thaiYear}`);
 };
-const filteredDocsSends = computed(() => {
-  // ตรวจสอบ props.docsSends ว่ามีข้อมูลหรือไม่
-  if (!props.docsSends) return [];
-
-  // กรองข้อมูลทั้งหมดตามเงื่อนไขที่กำหนดจากข้อมูลทั้งหมด
+const filteredDocsSends = computed(() => { 
+  if (!props.docsSends) return []; 
   const results = props.docsSends.filter(docsSends => {
     const matchesType = selectedDocumentType.value === 'all' ||
       (selectedDocumentType.value === 'transcripts' && docsSends.transcripts) ||

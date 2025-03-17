@@ -7,6 +7,7 @@ use App\Models\DocumentRequest;
 
 use App\Models\ScholarshipApplication;
 use App\Models\ActivitySave;
+use App\Models\UserLineNotify;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
@@ -23,7 +24,7 @@ use App\Models\Scholar;
 use App\Models\ScholarshipRecipient;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\RoleResource;
-
+ 
 class ScholarshipApplicationsController extends Controller
 {
     public function scholarstudents()
@@ -47,18 +48,79 @@ class ScholarshipApplicationsController extends Controller
     }
     public function AllStudents()
     {
+        $user = auth()->user();
         $scholarships = Scholarship::all();
+        $Notify = UserLineNotify::all();
         $applications = ScholarshipApplication::with('scholarship')
-            ->where('Interview_results', 1)
-            ->whereIn('scholar_id', $scholarships->pluck('id')) // เช็คว่ามี scholar_id ใน scholarships หรือไม่
-            ->limit($scholarships->count()) // จำกัดตามจำนวน scholarships
+            ->where('result', 1)
+            ->where('interview_score', '>=', 70)
+            ->orderBy('interview_score', 'desc')
             ->get();
-
+ 
+        $applicationsGrouped = $applications->groupBy('scholar_id');
+        $finalApplications = collect();
+        foreach ($applicationsGrouped as $scholarId => $groupedApplications) {
+            $scholarshipLimit = $scholarships->where('id', $scholarId)->first()->limits;
+            if ($groupedApplications->count() > $scholarshipLimit) {
+                $groupedApplications = $groupedApplications->take($scholarshipLimit);
+                $lastApplication = $groupedApplications->last();
+                $sameScoreApplications = $applications->where('interview_score', $lastApplication->interview_score);
+                $remainingApplications = $sameScoreApplications->filter(function ($app) use ($groupedApplications) {
+                    return !$groupedApplications->contains('id', $app->id);
+                });
+                $groupedApplications = $groupedApplications->merge($remainingApplications)->unique('id');
+            }
+            $finalApplications = $finalApplications->merge($groupedApplications);
+        } 
         return Inertia::render('Admin/Scholarships/ApplyScholars/AllStudents', [
+            'Notify' => $Notify,
+            'user' => $user,
             'scholarships' => $scholarships,
-            'applications' => $applications,
+            'applications' => $finalApplications->unique('id'),
+            'currentUser' => [
+                'id' => $user->id,
+                'roles' => $user->roles->pluck('name'), // ส่ง roles ไปด้วย
+            ],
         ]);
     }
+    public function interviewResults(Request $request)
+    {
+        try {
+            $Results = $request->input('Results');
+            $status = $request->input('status');
+         
+            if (!$Results) {
+                return response()->json(['error' => 'No applications selected'], 400);
+            }
+
+            ScholarshipApplication::whereIn('id', $Results)->update([
+                'Interview_results' => $status, 
+            ]);
+
+            return ;
+        } catch (\Exception $e) {
+            return ;
+        }
+    }
+
+
+    public function UserCancel(Request $request)
+    {
+        try { 
+            $ResultId = $request->input('Results');
+            $status = $request->input('status'); 
+            if (!$ResultId) {
+                return response()->json(['error' => 'ไม่พบข้อมูลที่ต้องอัปเดต'], 400);
+            } 
+            ScholarshipApplication::where('id', $ResultId)
+                ->update(['Interview_results' => $status]);
+            return response()->json(['message' => '✅ อัปเดตผลสัมภาษณ์สำเร็จ!'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => '❌ เกิดข้อผิดพลาด: ' . $e->getMessage()], 500);
+        }
+    }
+
+
     public function index()
     {
         $applications = ScholarshipApplication::with('user')->get();
@@ -101,7 +163,14 @@ class ScholarshipApplicationsController extends Controller
     {
         try {
             $validated = $request->validated();
-
+            $exists = ScholarshipApplication::where('user_id', $validated['user_id'])
+                ->where('scholar_id', $validated['scholar_id'])
+                ->exists();
+            if ($exists) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['error' => 'คุณได้สมัครทุนนี้ไปแล้ว']);
+            }
             foreach (['imagefile', 'scholar_form', 'reg_form', 'fee_receipt', 'certificates', 'conduct_cert', 'portfolio', 'fam_cert', 'award_certs', 'leader_proof', 'gpa_image'] as $fileField) {
                 if ($request->hasFile($fileField)) {
                     $fileName = time() . '_' . uniqid() . '.' . $request->file($fileField)->extension();
@@ -109,15 +178,78 @@ class ScholarshipApplicationsController extends Controller
                     $validated[$fileField] = $fileName;
                 }
             }
-
             ScholarshipApplication::create($validated);
-
             return redirect()->route('scholarship_applications.index')
                 ->with('success', 'บันทึกข้อมูลสำเร็จ!');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['error' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()]);
+        }
+    }
+
+
+    // public function Contracts(Request $request): RedirectResponse
+    // {
+    //     try {
+    //         $validated = $request->validate([
+    //             'data_id' => 'required|exists:scholarship_applications,id',
+    //             'scholarship_contract' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+    //         ]);
+
+    //         $scholarshipApplication = ScholarshipApplication::where('id', $request->data_id)->first();
+    //         if ($request->hasFile('scholarship_contract')) {
+    //             $fileName = time() . '_scholarship_contract.' . $request->file('scholarship_contract')->extension();
+    //             $request->file('scholarship_contract')->move(public_path('storage/files'), $fileName);
+    //             // เก็บชื่อไฟล์ลงในตัวแปร validated
+    //             $validated['scholarship_contract'] = $fileName;
+    //         }
+    //         $scholarshipApplication->update($validated);
+    //         return redirect()->back()->with('success', 'ข้อมูลถูกอัพเดตเรียบร้อย!');
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()
+    //             ->withInput()
+    //             ->withErrors(['error' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()]);
+    //     }
+    // }
+    public function Contracts(Request $request): RedirectResponse
+    {
+        try {
+            $validated = $request->validate([
+                'data_id' => 'required|exists:scholarship_applications,id',
+                'scholarship_contract' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            ]);
+            $scholarshipApplication = ScholarshipApplication::where('id', $request->data_id)->first();
+            if ($request->has('cancel_status') && $request->cancel_status == 3) {
+                $validated['contract_suggestions'] = ''; // กำหนดค่าให้ contract_suggestions เป็นค่าว่าง
+            }
+            if ($request->hasFile('scholarship_contract')) {
+                $fileName = time() . '_scholarship_contract.' . $request->file('scholarship_contract')->extension();
+                $request->file('scholarship_contract')->move(public_path('storage/files'), $fileName);
+                $validated['scholarship_contract'] = $fileName;
+            }
+            $scholarshipApplication->update($validated);
+
+            return redirect()->back()->with('success', 'ข้อมูลถูกอัพเดตเรียบร้อย!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()]);
+        }
+    }
+
+    public function deleteContracts($id)
+    {
+        try { 
+            $scholarshipApplication = ScholarshipApplication::findOrFail($id);
+            if ($scholarshipApplication->scholarship_contract && file_exists(public_path('storage/files/' . $scholarshipApplication->scholarship_contract))) {
+                unlink(public_path('storage/files/' . $scholarshipApplication->scholarship_contract)); // ลบไฟล์จริง
+            } 
+            $scholarshipApplication->update(['scholarship_contract' => null]);
+
+            return response()->json(['success' => 'ลบไฟล์เรียบร้อยแล้ว'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()], 500);
         }
     }
 
@@ -220,15 +352,29 @@ class ScholarshipApplicationsController extends Controller
             'application' => new ScholarshipApplicationsResource($application)
         ]);
     }
+    public function AddContract(ScholarshipApplication $application)
+    {
+        return Inertia::render('Admin/Scholarships/scholarContracts/AddContract', [
+            'application' => $application,
+            'user' => auth()->user(),  // ส่งข้อมูลผู้ใช้งานที่ล็อกอินอยู่
+        ]);
+    }
+
 
     public function interviewdetail(ScholarshipApplication $application): Response
     {
-
         return Inertia::render('Admin/Scholarships/ApplyScholars/Interviewdetail', [
             'application' => new ScholarshipApplicationsResource($application)
         ]);
     }
+ 
 
+    public function ContractsDetail(ScholarshipApplication $application): Response
+    {
+        return Inertia::render('Admin/Scholarships/scholarContracts/ApplyDetail', [
+            'application' => new ScholarshipApplicationsResource($application)
+        ]);
+    }
 
     public function destroy(ScholarshipApplication $application): RedirectResponse
     {

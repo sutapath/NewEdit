@@ -22,7 +22,7 @@ class ActivityInformation extends Model
         'limits',
         'regis_due',
         'link',
-        // 'hours',
+        'hours',
     ];
 
     public function user()
