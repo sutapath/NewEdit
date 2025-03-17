@@ -14,7 +14,7 @@
           <Link :href="route('activity_saves.index')" class="custom-button-danger">
             กลับ
           </Link>
-          <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing" @click="handleSubmit" class="custom-button-success">
+          <PrimaryButton v-if="props.save.result !== '1'" :class="{ 'opacity-25': form.processing }" :disabled="form.processing" @click="handleSubmit" class="custom-button-success">
             บันทึก
           </PrimaryButton>
         </div>

@@ -214,7 +214,7 @@ Route::get('/intlScholars/{intlScholar}/edit', [IntlScholarController::class, 'e
 Route::put('/intlScholars/{intlScholar}', [IntlScholarController::class, 'update'])->name('intlScholars.update');
 Route::delete('/intlScholars/{intlScholar}', [IntlScholarController::class, 'destroy'])->name('intlScholars.destroy');
 
- 
+    // Route::get('/DashBoard', [ScholarshipApplicationsController::class, 'Dash'])->name('Report.Dash');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {

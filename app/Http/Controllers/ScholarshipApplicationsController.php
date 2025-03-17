@@ -424,12 +424,26 @@ class ScholarshipApplicationsController extends Controller
             'type_1_count' => $applicationsByType['type_1']->count(),
         ];
         $totalFees = $applications->where('Interview_results', 1)->sum('tuition_fee');
+$counts = [ 
+            'preTermAll' => ScholarshipApplication::where('scholar_type', 1)->count(),
+            'preTermINV' => ScholarshipApplication::where('scholar_type', 1)->where('result', 1)->count(),
+            'preTermCon' => ScholarshipApplication::where('scholar_type', 1)->where('cancel_status', 1)->count(),
+            'preTermDis' => ScholarshipApplication::where('scholar_type', 1)->where('cancel_status', 0)->count(),
+            // ส่วนของ selectType 0
 
+            'INTAll' => ScholarshipApplication::where('scholar_type', 0)->count(),
+            'INTINV' => ScholarshipApplication::where('scholar_type', 0)->where('result', 1)->count(),
+            'INTTermCon' => ScholarshipApplication::where('scholar_type', 0)->where('cancel_status', 1)->count(),
+            'INTTermDis' => ScholarshipApplication::where('scholar_type', 0)->where('cancel_status', 0)->count(),
+        ];
         return Inertia::render('Admin/Scholarships/Report', [
             'applications' => $applications,
             'applicationsByType' => $applicationsByType,
             'totalFees' => $totalFees,
             'countByType' => $countByType,
+            'counts' => $counts,
+
         ]);
     }
+ 
 }

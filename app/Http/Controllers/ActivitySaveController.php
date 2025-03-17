@@ -17,15 +17,23 @@ class ActivitySaveController extends Controller
     public function index(): Response
     {
         $user = auth()->user();
+
         if ($user->hasRole('admin') || $user->hasRole('officer')) {
             $saves = ActivitySave::all();
         } else {
             $saves = ActivitySave::where('user_id', $user->id)->get();
         }
+
+        // คำนวณจำนวนชั่วโมงทั้งหมด
+        $totalHours = $saves->sum('hours');  // รวมชั่วโมงทั้งหมด
+
         return Inertia::render('Admin/Activities/Saves/Index', [
             'saves' => $saves,
+            'totalHours' => $totalHours,  // ส่งจำนวนชั่วโมงทั้งหมดไปยังหน้า view
         ]);
     }
+
+
     public function create(Request $request): Response
     { 
         $regis_id = $request->input('regis_id'); 

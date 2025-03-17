@@ -9,6 +9,11 @@
         <div class="flex-1 mr-3 ml-3">
           <hr class="border-t border-gray-300" />
         </div>
+        <div class="flex justify-end space-x-4 mr-3">
+          <p v-if="hasRole('scholar') || hasRole('intlscholar')" class="custom-button-warning px-4">
+            จำนวนชั่วโมง : {{ props.totalHours }}
+          </p>
+        </div>
         <div class="flex justify-end space-x-4">
           <Link :href="route('activity_registrations.index')" v-if="hasRole('scholar') || hasRole('intlscholar')"
             class="custom-button-success px-4">
@@ -23,7 +28,7 @@
       </div>
     </div>
 
-    <!-- Table Layout -->
+
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <Table>
         <thead>
@@ -36,7 +41,7 @@
             <TableHeaderCell class="min-w-[100px]">ชั่วโมง</TableHeaderCell>
             <TableHeaderCell class="min-w-[120px]">ภาพ</TableHeaderCell>
             <TableHeaderCell class="min-w-[150px]">ผลลัพธ์</TableHeaderCell>
-            <TableHeaderCell class="min-w-[120px]">ตรวจสอบ</TableHeaderCell>
+            <TableHeaderCell class="min-w-[120px]">เพิ่มเติม</TableHeaderCell>
           </tr>
         </thead>
 
@@ -72,13 +77,16 @@
             <TableDataCell class="min-h-[100px]">
               <div class="flex space-x-2">
                 <Link :href="route('activity_saves.edit', save.id)"
-                  v-if="(hasRole('scholar') || hasRole('intlscholar')) && save.result !== '1'"
+                  v-if="hasRole('scholar') || hasRole('intlscholar')"
+                  class="custom-button-warning">เพิ่มเติม</Link>
+                <Link :href="route('activity_saves.edit', save.id)"
+                  v-if="hasRole('scholar') || hasRole('intlscholar') && (save.result !== '1')"
                   class="custom-button-warning">แก้ไข</Link>
                 <button @click="confirmDelete(save.id)"
-                  v-if="(hasRole('scholar') || hasRole('intlscholar')) && save.result !== '1'"
+                  v-if="hasRole('scholar') || hasRole('intlscholar') && (save.result !== '1')"
                   class="custom-button-danger">ลบ</button>
                 <button @click="showCheckActivity(save.id)"
-                  v-if="(hasRole('admin') || hasRole('officer')) && save.result !== '1' && save.result !== '3'"
+                  v-if="(hasRole('admin') || hasRole('officer')) && (save.result !== '1' || save.result !== '3')"
                   class="custom-button-warning">ตรวจ</button>
               </div>
             </TableDataCell>
@@ -143,7 +151,6 @@
       </div>
     </div>
 
-
   </AuthenticatedLayout>
 </template>
 
@@ -166,6 +173,8 @@ const { hasRole } = usePermission();
 
 const props = defineProps({
   saves: Array,
+  totalHoursPerYear:Object,
+  totalHours: Object
 }); 
 // Reactive variable to control modal visibility
 const isModalVisible = ref(false);
@@ -184,9 +193,7 @@ const showModal = () => {
 
 const hideModal = () => {
   isModalVisible.value = false;
-};
-
-// Dynamic component loading for Check component
+}; 
 const CheckComponent = defineAsyncComponent(() => import('@/Pages/Admin/Activities/Saves/Check.vue'));
 
 const form = useForm({});
@@ -197,22 +204,19 @@ const selectedImage = ref('');
 const showCheckModal = ref(false);
 const currentSave = ref(null);
 const searchQuery = ref('');
- 
-const filteredSaves = computed(() => {
-  let results = [...props.saves]; // คัดลอกข้อมูลเพื่อป้องกันการเปลี่ยนค่าใน props
+// const totalHours = computed(() => {
+//   return filteredSaves.value.reduce((total, save) => total + (save.hours || 0), 0);
+// });
 
-  // ค้นหาตาม searchQuery
+const filteredSaves = computed(() => {
+  let results = [...props.saves]; 
   if (searchQuery.value) {
     results = results.filter(save => {
       const fullName = `${save.fname} ${save.lname}`;
       return fullName.includes(searchQuery.value);
     });
   }
-
-  // ลำดับที่ต้องการให้แสดงก่อน
-  const resultOrder = ['2', '4', '1', '3'];
-
-  // จัดเรียงตาม resultOrder โดยให้ค่าที่ไม่อยู่ในลำดับไปอยู่ท้ายสุด
+  const resultOrder = ['2', '4', '1', '3']; 
   results.sort((a, b) => {
     const indexA = resultOrder.indexOf(String(a.result));
     const indexB = resultOrder.indexOf(String(b.result));
@@ -220,35 +224,25 @@ const filteredSaves = computed(() => {
     return (indexA === -1 ? Number.MAX_SAFE_INTEGER : indexA) -
       (indexB === -1 ? Number.MAX_SAFE_INTEGER : indexB);
   });
-
-  // อัปเดตจำนวนรายการทั้งหมด
   totalItems.value = results.length;
-
-  // คำนวณข้อมูลตามหน้าปัจจุบัน (pagination)
   const start = (currentPage.value - 1) * perPage.value;
   return results.slice(start, start + perPage.value);
 });
 
-// คำนวณจำนวนหน้าทั้งหมด
 const totalPages = computed(() => {
   return Math.ceil(totalItems.value / perPage.value);
 });
-
-
 
 const isFirstOfGroup = (save) => {
   const previousSaveIndex = filteredSaves.value.indexOf(save) - 1;
   const previousSave = filteredSaves.value[previousSaveIndex];
   return !previousSave || previousSave.user_id !== save.user_id;
 };
-
-// Function to display full name
 const displayName = (save) => {
   const titles = ['นาย', 'นาง', 'นางสาว'];
   return `${titles[save.title]} ${save.fname} ${save.lname}`;
 };
 
-// Date formatting function
 const formatDate = (date) => {
   const months = [
     'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
@@ -263,7 +257,6 @@ const formatDate = (date) => {
   return `${day} ${month} ${year}`;
 };
 
-// Functions for modal and deletion
 const confirmDelete = (id) => {
   currentId.value = id;
   showConfirmDeleteModal.value = true;

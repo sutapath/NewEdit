@@ -234,16 +234,16 @@ import PublishInfo from '@/Pages/Admin/Scholarships/ApplyScholars/PublishInfo.vu
             </Link>
           </TableDataCell>
         </TableRow>
-
+<!-- <tbody v-if="!props.applications.some(application => application.user_id === props.currentUser.id)"
+  class="bg-white divide-y divide-gray-200">
+  <tr class="flex justify-center items-center">
+    <td colspan="5" class="px-6 py-4 text-md text-gray-700 text-center">
+      ไม่มีข้อมูลการสมัคร
+    </td>
+  </tr>
+</tbody> -->
       </Table>
-      <tbody v-if="!props.applications.some(application => application.user_id === props.currentUser.id)"
-        class="bg-white divide-y divide-gray-200">
-        <tr class="flex justify-center items-center">
-          <td colspan="5" class="px-6 py-4 text-md text-gray-700 text-center">
-            ไม่มีข้อมูลการสมัคร
-          </td>
-        </tr>
-      </tbody>
+
 
       <div class="flex justify-end items-center w-full mt-4 space-x-4">
         <div class="flex items-center">
@@ -274,11 +274,11 @@ import PublishInfo from '@/Pages/Admin/Scholarships/ApplyScholars/PublishInfo.vu
       <PublishInfo />
     </div>
   </Modal>
-  <!-- <Modal :show="showModalEdit" @close="closeModalEdit">
+  <Modal :show="showModalEdit" @close="closeModalEdit">
     <div class="p-6">
       <PublishInfoEdit :publishId="selectedPublishId" :publishData="publishData" />
     </div>
-  </Modal> -->
+  </Modal>
 
 
 </template>

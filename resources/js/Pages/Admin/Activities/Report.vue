@@ -85,6 +85,7 @@ watch([selectedScholarship, selectedYear], () => {
       </div>
     </div>
 
+
     <div class="max-w-full sm:max-w-7xl mx-auto py-2 sm:px-6 lg:px-8 bg-white sm:rounded-xl overflow-x-auto">
       <Table class="min-w-full divide-y divide-gray-200">
         <template #header>
@@ -128,7 +129,7 @@ watch([selectedScholarship, selectedYear], () => {
               <TableDataCell class="px-6 py-4 text-center whitespace-nowrap text-md text-gray-800">{{ activity.min_hours
                 }}
               </TableDataCell>
-              <TableDataCell class="px-6 py-4 text-center whitespace-nowrap text-md">{{ activity.total_hours }}
+              <TableDataCell class="px-6 py-4 text-center whitespace-nowrap text-md">{{ activity.total_hours }} / ปีการศึกษา
               </TableDataCell>
               <TableDataCell class="px-6 py-4 whitespace-nowrap text-md text-gray-800"
                 v-if="hasRole('admin') || hasRole('officer')">
