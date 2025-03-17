@@ -40,7 +40,7 @@ const filteredApplications = computed(() => {
   if (!Array.isArray(props.applications)) return [];
   const isStudentOrMember =
     currentUser.value.roles.includes("student") ||
-    currentUser.value.roles.includes("member");
+    currentUser.value.roles.includes("member") || currentUser.value.roles.includes("scholar");
   const results = props.applications.filter((application) => {
     const matchesScholar =
       !selectedScholarId.value || application.scholar_id === selectedScholarId.value;
@@ -368,6 +368,112 @@ const sendLineNotification = (userId, message) => {
       console.error("Error:", error);
     });
 };
+
+const approveCancellation = (application) => {
+  Swal.fire({
+    title: "ยืนยันการยกเลิกทุน?",
+    html: `
+      <strong>ผู้ดำเนินรายการ:</strong> ${application.cancel_by} <br>
+      <strong>วันที่:</strong> ${application.cancel_date} <br>
+      <strong>เหตุผล:</strong> ${application.cancellation_reason} <br>
+      <br>
+      กรุณายืนยันการยกเลิก
+    `,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "อนุมัติ",
+    cancelButtonText: "ไม่อนุมัติ",
+    confirmButtonColor: "#28a745",
+    cancelButtonColor: "#dc3545",
+  }).then((result) => {
+    let cancelStatus = "1";
+    let cancelDate = "";
+    let cancelBy = "";
+    let reason = "";
+
+    if (result.isConfirmed) {
+      cancelStatus = "0";
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+      cancelDate = currentDate.toISOString().split("T")[0];
+      cancelBy = application.cancel_by;
+      reason = application.cancellation_reason;
+    }
+    const formData = {
+      cancel_status: cancelStatus,
+      cancellation_reason: reason,
+      cancel_date: cancelDate,
+      cancel_by: cancelBy,
+    }; 
+    const roleData =
+      formData.cancel_status == "0"
+        ? [
+          props.application.scholar_type == "0"
+            ? { id: 5, name: "member" }
+            : { id: 4, name: "student" },
+        ]
+        : [];
+
+    const userId = props.user?.id;
+    console.log("User ID:", userId);
+    console.log("User Data:", formData);
+    console.log("Role Data:", roleData); 
+    if (roleData.length > 0) {
+      axios
+        .put(route("users.updatescholar", { user: userId }), {
+          user: props.user,
+          roles: roleData,
+        })
+        .then(() => {
+          console.log("Role updated successfully!");
+        });
+    }
+
+    console.log(formData);
+    axios
+      .put(
+        route("scholarship_application.check", { id: application.id }),
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((response) => {
+        console.log("อัปเดตข้อมูลสำเร็จ!", response.data);
+        Swal.fire({
+          icon: "success",
+          title: "อัปเดตสำเร็จ!",
+          text: "ข้อมูลได้รับการบันทึกแล้ว",
+          confirmButtonColor: "#28a745",
+          confirmButtonText: "ตกลง",
+        });
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาด:", error.response?.data || error.message);
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด!",
+          text: "ไม่สามารถอัปเดตข้อมูลได้ กรุณาลองใหม่",
+          confirmButtonColor: "#dc3545",
+          confirmButtonText: "ตกลง",
+        });
+      });
+
+    if (result.dismiss === Swal.DismissReason.cancel) {
+      Swal.fire({
+        icon: "info",
+        title: "การยกเลิกถูกยกเลิก",
+        text: "การยกเลิกทุนการศึกษาถูกยกเลิก",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "ตกลง",
+      });
+    }
+  });
+};
+
+
 const confirmCancellation = () => {
   Swal.fire({
     title: "ยืนยันการยกเลิกทุน?",
@@ -437,6 +543,9 @@ const confirmCancellation = () => {
     }
   });
 };
+
+
+
 </script>
 <template>
 
@@ -536,47 +645,46 @@ const confirmCancellation = () => {
 
           <TableDataCell>
             <div v-if="hasRole('admin') || hasRole('officer')">
-              <span v-if="application.cancel_status == 1" class="bg-green-200 py-1 rounded-xl px-2">
+              <PrimaryButton v-if="application.cancel_status == 1" class="custom-button-success"
+                @click="showDocument(application)">
                 ลงนามสำเร็จ
-              </span>
-              <span v-else-if="application.cancel_status == 0" class="bg-red-200 py-1 rounded-xl px-2">
-                ยกเลิกการรับทุน
-              </span>
-              <!-- <span v-else-if="application.cancel_status == 2" class="bg-blue-200 py-1 rounded-xl px-2">
-                ยกเลิกลงนาม
-              </span> -->
-              <span v-else-if="application.cancel_status == 2" class="bg-yellow-200 py-1 rounded-xl px-2">
-                ดำเนินการแก้ไข
-              </span>
-              <span v-else>-</span>
-              <PrimaryButton v-if="application && application.scholarship_contract" @click="showDocument(application)"
-                class="bg-blue-500 py-1 mx-2 text-white rounded-xl px-2">
-                ดู
               </PrimaryButton>
+              <PrimaryButton v-else-if="application.cancel_status == 0" class="custom-button-danger"
+                @click="showDocument(application)">
+                ยกเลิกการรับทุน
+              </PrimaryButton>
+              <PrimaryButton v-else-if="application.cancel_status == 2" class="custom-button-warning"
+                @click="showDocument(application)">
+                ดำเนินการแก้ไข
+              </PrimaryButton>
+              <span v-else>-</span>
             </div>
 
-            <div v-if="hasRole('student') || hasRole('member')" class="flex space-x-2">
-              <div v-if="application.cancel_status == 1"
-                class="bg-green-300 text-gray-900 rounded-xl p-2 athiti-medium">
-                ลงนามสำเร็จ
-              </div>
-              <div v-else-if="application.cancel_status == 0"
-                class="bg-red-300 text-gray-900 rounded-xl p-2 athiti-medium cursor-pointer">
-                ยกเลิกการรับทุน
-              </div>
-              <div v-else-if="application.cancel_status == 2"
-                class="bg-yellow-300 text-gray-900 rounded-xl p-2 athiti-medium cursor-pointer">
-                ดำเนินการแก้ไข
-              </div>
 
-              <p v-else class="bg-gray-400 text-white py-1 px-3 rounded-xl cursor-not-allowed">
-                -
-              </p>
-              <PrimaryButton v-if="application && application.scholarship_contract && application.cancel_status != 0"
+            <div v-if="hasRole('student') || hasRole('member') || hasRole('scholar')" class="flex space-x-2">
+              <PrimaryButton v-if="application.cancel_status == 1" @click="navigateToAddContract(application.id)"
+                class="bg-green-300 text-gray-900 p-2 athiti-medium rounded-xl">
+                ลงนามสำเร็จ
+              </PrimaryButton>
+              <PrimaryButton v-else-if="application.cancel_status == 0" @click="navigateToAddContract(application.id)"
+                class="bg-red-300 text-gray-900 p-2 athiti-medium rounded-xl">
+                ยกเลิกการรับทุน
+              </PrimaryButton>
+              <PrimaryButton v-else-if="application.cancel_status == 2" @click="navigateToAddContract(application.id)"
+                class="bg-yellow-300 text-gray-900 p-2 athiti-medium rounded-xl">
+                ดำเนินการแก้ไข
+              </PrimaryButton>
+              <PrimaryButton v-else class="bg-yellow-300 text-gray-900 p-2 athiti-medium rounded-xl"
+                @click="navigateToAddContract(application.id)">
+
+                ลงนาม
+              </PrimaryButton>
+              <!-- <PrimaryButton v-if="application && application.scholarship_contract && application.cancel_status != 0"
                 @click="navigateToAddContract(application.id)" class="bg-blue-500 py-1 mx-2 text-white rounded-xl px-2">
                 ดู
-              </PrimaryButton>
+              </PrimaryButton> -->
             </div>
+
           </TableDataCell>
           <TableDataCell>
             <div class="text-gray-800 font-semibold">{{ application.approved_by }}</div>
@@ -584,15 +692,20 @@ const confirmCancellation = () => {
           </TableDataCell>
 
           <TableDataCell>
-            <div class="text-gray-800 font-semibold">{{ application.cancel_by }}</div>
-            <div class="text-gray-500">{{ application.cancel_date }}</div>
-            <div class="text-red-500">{{ application.cancellation_reason }}</div>
+            <PrimaryButton v-if="application.cancel_status == 4 && (hasRole('admin') || hasRole('officer'))" class="custom-button-warning"
+              @click="approveCancellation(application)">
+              หมายเหตุ
+            </PrimaryButton>
+            <div v-if="hasRole('student') || hasRole('member') || hasRole('scholar')">
+
+              <div class="text-gray-800 font-semibold">{{ application.cancel_by }}</div>
+              <div class="text-gray-500">{{ application.cancel_date }}</div>
+              <div class="text-red-500">{{ application.cancellation_reason }}</div>
+            </div>
           </TableDataCell>
         </TableRow>
       </Table>
-      <tbody
-        v-if="props.applications == []"
-        class="bg-white divide-y divide-gray-200">
+      <tbody v-if="props.applications == []" class="bg-white divide-y divide-gray-200">
         <tr class="flex justify-center items-center">
           <td colspan="5" class="px-6 py-4 text-md text-gray-700 text-center">
             ไม่มีข้อมูลการสมัคร
@@ -635,8 +748,10 @@ const confirmCancellation = () => {
             <TextInput id="contract_suggestions" type="text" class="mt-1 block w-full"
               v-model="req_data.contract_suggestions" />
           </div>
+
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-6">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-2">
 
           <PrimaryButton v-if="hasRole('admin') || hasRole('officer')"
             class="mt-4 mb-3 w-full bg-green-500 text-white py-2 rounded-xl" @click="submitCheck">

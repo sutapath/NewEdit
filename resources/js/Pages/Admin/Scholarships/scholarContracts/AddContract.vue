@@ -8,7 +8,7 @@
         </div>
 
         <div class="flex justify-end space-x-4">
-          <div v-if="hasRole('student') || hasRole('member')">
+          <div v-if="hasRole('student') || hasRole('member') || hasRole('scholar')">
             <PrimaryButton class="custom-button-disabled" @click="confirmCancellation">
               ยกเลิกทุนการศึกษา
             </PrimaryButton>
@@ -16,7 +16,7 @@
           <PrimaryButton class="custom-button-danger" @click="goBack">
             กลับ
           </PrimaryButton>
-          <PrimaryButton :class="{ 'opacity-25': form.processing }" @click="handleSubmit" class="custom-button-success">
+          <PrimaryButton :class="{ 'opacity-25': form.processing }" v-if="props.application?.cancel_status != 4 && props.application?.cancel_status != 3 && props.application?.cancel_status != 1 && props.application?.cancel_status != 0 && props.application?.cancel_status == null" @click="handleSubmit" class="custom-button-success">
             บันทึก
           </PrimaryButton>
         </div>
@@ -38,7 +38,7 @@
                 กรุณาเพิ่มข้อมูล
               </div>
             </div>
-            <div class="mb-4">
+            <div class="mb-4" v-if="props.application?.contract_suggestions">
               <InputLabel for="contract_suggestions" value="ข้อเสนอแนะ" />
               <p id="contract_suggestions" class="mt-1 block w-full bg-gray-100 p-2 rounded">
                 {{ props.application?.contract_suggestions }}
@@ -79,7 +79,10 @@
             <PrimaryButton class="custom-button-primary mr-3" :href="downloadDocumentLink" download>
               ดาวน์โหลดเอกสาร
             </PrimaryButton>
-            <button @click="handleDelete" class="custom-button-danger">ลบไฟล์</button>
+            <button
+              v-if="props.application?.cancel_status != 4 && props.application?.cancel_status != 3 && props.application?.cancel_status != 1 && props.application?.cancel_status != 0"
+              @click="handleDelete" class="custom-button-danger">ลบไฟล์</button>
+
           </div>
         </div>
       </div>
@@ -263,30 +266,30 @@ const confirmCancellation = () => {
 
       const cancelDateString = cancelDate.toISOString().split("T")[0];
       const formData = {
-        cancel_status: "0",
+        cancel_status: "4",
         cancellation_reason: result.value,
         cancel_date: cancelDateString,
         cancel_by: `${props.user.fname} ${props.user.lname}`,
       };
-      const roleData =
-        formData.cancel_status == "0"
-          ? [
-            props.application.scholar_type == "0"
-              ? { id: 5, name: "member" }
-              : { id: 4, name: "student" },
-          ]
-          : [];
+      // const roleData =
+      //   formData.cancel_status == "0"
+      //     ? [
+      //       props.application.scholar_type == "0"
+      //         ? { id: 5, name: "member" }
+      //         : { id: 4, name: "student" },
+      //     ]
+      //     : [];
 
-      const userId = props.user?.id;
-      console.log("User ID:", userId);
-      console.log("User Data:", formData);
-      console.log("Role Data:", roleData);
-      if (roleData) {
-        axios.put(route("users.updatescholar", { user: userId }), {
-          user: props.user,
-          roles: roleData,
-        });
-      }
+      // const userId = props.user?.id;
+      // console.log("User ID:", userId);
+      // console.log("User Data:", formData);
+      // console.log("Role Data:", roleData);
+      // if (roleData) {
+      //   axios.put(route("users.updatescholar", { user: userId }), {
+      //     user: props.user,
+      //     roles: roleData,
+      //   });
+      // }
 
       console.log(formData);
 
