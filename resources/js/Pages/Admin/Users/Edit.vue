@@ -1169,35 +1169,47 @@ const filteredDistricts = computed(() => {
 });
 
 const roles = ref(props.roles || []);
+  
+  const submit = () => {
+    form.name = userData.value.name;
+    form.email = userData.value.email;
+    form.id_card = userData.value.id_card;
+    form.phone = userData.value.phone;
+    form.birthday = formatBirthday(userData.value.birthday); // ให้แน่ใจว่า format ถูกต้อง
+    form.title = userData.value.title;
+    form.fname = userData.value.fname;
+    form.lname = userData.value.lname;
+    form.zip_code = userData.value.zip_code;
+    form.student_code = userData.value.student_code;
+    form.institution = userData.value.institution;
+    form.branch = userData.value.branch;
+    form.faculty = userData.value.faculty;
+    form.sub_district = userData.value.sub_district;
+    form.district = userData.value.district;
+    form.province = userData.value.province;
 
-const submit = () => {  
-
-  form.put(route("users.update", props.user.id), {
-    
-    onSuccess: () => {
-      console.debug("✅ อัปเดตสำเร็จ!", form);
-
-      Swal.fire({
-        title: "อัปเดตสำเร็จ!",
-        text: "ข้อมูลผู้ใช้ถูกอัปเดตเรียบร้อย",
-        icon: "success",
-        confirmButtonText: "ตกลง",
-        confirmButtonColor: "#3085d6",
-      });
-    },
-    onError: (errors) => {
-      console.error("❌ อัปเดตล้มเหลว:", errors);
-
-      Swal.fire({
-        title: "เกิดข้อผิดพลาด!",
-        text: "ไม่สามารถอัปเดตข้อมูลได้",
-        icon: "error",
-        confirmButtonText: "ลองอีกครั้ง",
-      });
-    },
-  });
-};
- 
+    form.put(route("users.update", props.user.id), {
+      onSuccess: () => {
+        console.debug("✅ อัปเดตสำเร็จ!", form);
+        Swal.fire({
+          title: "อัปเดตสำเร็จ!",
+          text: "ข้อมูลผู้ใช้ถูกอัปเดตเรียบร้อย",
+          icon: "success",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#3085d6",
+        });
+      },
+      onError: (errors) => {
+        console.error("❌ อัปเดตล้มเหลว:", errors);
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด!",
+          text: "ไม่สามารถอัปเดตข้อมูลได้",
+          icon: "error",
+          confirmButtonText: "ลองอีกครั้ง",
+        });
+      },
+    });
+  };
 function formatBirthday(birthday) {
   return birthday ? moment(birthday).format('YYYY-MM-DD') : '';
 }

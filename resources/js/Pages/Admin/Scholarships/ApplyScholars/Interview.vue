@@ -195,7 +195,7 @@ import PublishInfo from '@/Pages/Admin/Scholarships/ApplyScholars/PublishInfo.vu
           <TableHeaderCell>ลำดับ</TableHeaderCell>
           <TableHeaderCell>ชื่อ - สกุล</TableHeaderCell>
           <TableHeaderCell>ประเภท</TableHeaderCell>
-          <TableHeaderCell>คะแนน</TableHeaderCell>
+          <TableHeaderCell class="w-[200px]">คะแนน</TableHeaderCell>
           <TableHeaderCell>Actions</TableHeaderCell>
         </TableRow>
         <TableRow v-for="(application, index) in filteredApplications" :key="application.id">
@@ -213,10 +213,12 @@ import PublishInfo from '@/Pages/Admin/Scholarships/ApplyScholars/PublishInfo.vu
           <TableDataCell style="white-space: nowrap;">
 
             <form @submit.prevent="handleSubmit(application.id, application.interview_score)"
-              enctype="multipart/form-data" class="w-[100px]">
+              enctype="multipart/form-data" class="w-[200px]">
 
               <TextInput id="interview_score" type="number" class="mt-1 block w-full"
-                v-model="application.interview_score" :disabled="application.cancel_status" />
+                v-model="application.interview_score" :disabled="application.cancel_status"
+                :class="{ 'bg-gray-200 text-gray-500 cursor-not-allowed': application.cancel_status }" />
+
 
               <div v-if="application.interview_score > 100" class="mt-2 text-red-500">
                 คะแนนสัมภาษณ์ต้องไม่เกิน 100
@@ -234,7 +236,7 @@ import PublishInfo from '@/Pages/Admin/Scholarships/ApplyScholars/PublishInfo.vu
             </Link>
           </TableDataCell>
         </TableRow>
-<!-- <tbody v-if="!props.applications.some(application => application.user_id === props.currentUser.id)"
+        <!-- <tbody v-if="!props.applications.some(application => application.user_id === props.currentUser.id)"
   class="bg-white divide-y divide-gray-200">
   <tr class="flex justify-center items-center">
     <td colspan="5" class="px-6 py-4 text-md text-gray-700 text-center">

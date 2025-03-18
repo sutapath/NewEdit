@@ -17,13 +17,13 @@
             </div>
             <div>
               <template v-if="hasRole('student') || hasRole('member')" class="flex space-x-2 ml-auto">
-                <Link v-if="application.scholar_type == 0"
+                <Link v-if="application.scholar_type == 0 && application.scholar_type != '0' "
                   :href="route('scholarship_applications.intanil', { id: application.id })"
                   class="custom-button-warning  mr-3">
                 แก้ไข
                 </Link>
 
-                <Link v-else-if="application.scholar_type == 1"
+                <Link v-else-if="application.scholar_type == 1 && application.scholar_type != '0'"
                   :href="route('scholarship_applications.perterm', { id: application.id })"
                   class="custom-button-warning mr-3">
                 แก้ไข
