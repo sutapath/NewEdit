@@ -1,11 +1,11 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import vue from '@vitejs/plugin-vue';
+import { defineConfig } from "vite";
+import laravel from "laravel-vite-plugin";
+import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
     plugins: [
         laravel({
-            input: 'resources/js/app.js',
+            input: "resources/js/app.js",
             refresh: true,
         }),
         vue({
@@ -17,4 +17,18 @@ export default defineConfig({
             },
         }),
     ],
+    build: {
+        outDir: "public/build",
+        manifest: true,
+        rollupOptions: {
+            input: {
+                main: "resources/js/app.js",
+            },
+            output: {
+                assetFileNames: "assets/[name].[hash][extname]",
+                chunkFileNames: "assets/[name].[hash].js",
+                entryFileNames: "assets/[name].[hash].js",
+            },
+        },
+    },
 });
