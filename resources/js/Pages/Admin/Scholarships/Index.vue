@@ -67,8 +67,7 @@
           </Link>
           <div class="absolute bottom-4 right-4 mt-10 flex space-x-2">
             <template v-if="hasRole('admin') || hasRole('officer')">
-              <button @click="() => this.$inertia.get(route('scholarships.edit', { id: scholarship.id }))"
-                class="custom-button-warning">
+              <button @click="editScholarship(scholarship.id)" class="custom-button-warning">
                 แก้ไข
               </button>
             </template>
@@ -114,7 +113,9 @@ const props = defineProps({
 const form = useForm({});
 const showConfirmDeleteScholarshipModal = ref(false);
 const selectedScholarshipId = ref(null);
-
+const editScholarship = (id) => {
+  window.location.href = route('scholarships.edit', { id })
+}
 const confirmDeleteScholarship = (id) => {
   Swal.fire({
     title: 'คุณแน่ใจหรือไม่?',

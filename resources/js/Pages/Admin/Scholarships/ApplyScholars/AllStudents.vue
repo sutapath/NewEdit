@@ -612,7 +612,9 @@ const confirmCancellation = () => {
 
         <TableRow v-for="(application, index) in filteredApplications" :key="application.id">
           <TableDataCell v-if="hasRole('admin') || hasRole('officer')">
-            <input type="checkbox" :value="application.id" @change="handleSelect(application.id)" />
+            <input type="checkbox" @change="handleSelectAll"
+              v-if="(hasRole('admin') || hasRole('officer')) && application.cancel_status == 1" />
+
           </TableDataCell>
           <TableDataCell>{{ index + 1 }}</TableDataCell>
           <TableDataCell>
@@ -657,6 +659,10 @@ const confirmCancellation = () => {
                 @click="showDocument(application)">
                 ดำเนินการแก้ไข
               </PrimaryButton>
+              <PrimaryButton v-else-if="application.cancel_status == 4" class="custom-button-disabled"
+                @click="showDocument(application)">
+                รอตรวจสอบ
+              </PrimaryButton>
               <span v-else>-</span>
             </div>
 
@@ -673,6 +679,10 @@ const confirmCancellation = () => {
               <PrimaryButton v-else-if="application.cancel_status == 2" @click="navigateToAddContract(application.id)"
                 class="bg-yellow-300 text-gray-900 p-2 athiti-medium rounded-xl">
                 ดำเนินการแก้ไข
+              </PrimaryButton>
+              <PrimaryButton v-else-if="application.cancel_status == 4" @click="navigateToAddContract(application.id)"
+                class="bg-gray-100 text-gray-900 p-2 athiti-medium rounded-xl">
+                รอตรวจสอบ
               </PrimaryButton>
               <PrimaryButton v-else class="bg-yellow-300 text-gray-900 p-2 athiti-medium rounded-xl"
                 @click="navigateToAddContract(application.id)">
@@ -692,8 +702,8 @@ const confirmCancellation = () => {
           </TableDataCell>
 
           <TableDataCell>
-            <PrimaryButton v-if="application.cancel_status == 4 && (hasRole('admin') || hasRole('officer'))" class="custom-button-warning"
-              @click="approveCancellation(application)">
+            <PrimaryButton v-if="application.cancel_status == 4 && (hasRole('admin') || hasRole('officer'))"
+              class="custom-button-warning" @click="approveCancellation(application)">
               หมายเหตุ
             </PrimaryButton>
             <div v-if="hasRole('student') || hasRole('member') || hasRole('scholar')">

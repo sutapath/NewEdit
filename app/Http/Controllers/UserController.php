@@ -179,7 +179,38 @@ use Spatie\Permission\Models\Role;
 }
 
 
-public function editscholar(User $user): Response
+    public function updateuser(Request $request, $id): RedirectResponse
+    {
+        // ค้นหาผู้ใช้ตาม ID  
+        $user = User::findOrFail($id);
+
+        // Validate ข้อมูลก่อนอัปเดต  
+        $validatedData = $request->validate([
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|string|email|max:255',
+            'student_code' => 'nullable|string|max:15',
+            'title' => 'nullable|string|max:5',
+            'fname' => 'nullable|string|max:255',
+            'lname' => 'nullable|string|max:255',
+            'birthday' => 'nullable|date',
+            'phone' => 'nullable|string|max:15',
+            'id_card' => 'nullable|string|max:15',
+            'house_no' => 'nullable|string|max:10',
+            'village_name' => 'nullable|string|max:255',
+            'sub_district' => 'nullable|string|max:255',
+            'district' => 'nullable|string|max:255',
+            'province' => 'nullable|string|max:255',
+            'zip_code' => 'nullable|string|max:15',
+            'officer_code' => 'nullable|string|max:15',
+        ]);
+
+        // อัปเดตข้อมูลผู้ใช้  
+        $user->update($validatedData);
+
+        // ส่งกลับพร้อม flash message  
+        return back()->with('success', 'ข้อมูลผู้ใช้ถูกอัปเดตเรียบร้อย');
+    }
+    public function editscholar(User $user): Response
 {
     $user->load(['roles']);
     return Inertia::render('Admin/Users/EditScholar', [

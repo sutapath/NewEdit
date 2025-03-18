@@ -106,7 +106,7 @@ const props = defineProps({
   user: Object,
 });
 
-const form = useForm({
+const form = useForm({ 
   scholarship_contract: null,
   data_id: props.application?.id || null, 
 });

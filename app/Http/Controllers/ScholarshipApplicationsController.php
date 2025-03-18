@@ -219,15 +219,25 @@ class ScholarshipApplicationsController extends Controller
                 'data_id' => 'required|exists:scholarship_applications,id',
                 'scholarship_contract' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             ]);
+
             $scholarshipApplication = ScholarshipApplication::where('id', $request->data_id)->first();
-            if ($request->has('cancel_status') && $request->cancel_status == 3) {
+
+            // กำหนด cancel_status เป็น 4 ถ้าไม่มีค่าจากฟอร์ม
+            $validated['cancel_status'] = $request->has('cancel_status') ? $request->cancel_status : 4;
+
+            // ถ้า cancel_status เป็น 3 ให้กำหนดค่าให้ contract_suggestions เป็นค่าว่าง
+            if ($validated['cancel_status'] == 3) {
                 $validated['contract_suggestions'] = ''; // กำหนดค่าให้ contract_suggestions เป็นค่าว่าง
             }
+
+            // ถ้ามีการอัพโหลดไฟล์ scholarship_contract
             if ($request->hasFile('scholarship_contract')) {
                 $fileName = time() . '_scholarship_contract.' . $request->file('scholarship_contract')->extension();
                 $request->file('scholarship_contract')->move(public_path('storage/files'), $fileName);
                 $validated['scholarship_contract'] = $fileName;
             }
+
+            // อัปเดตข้อมูล
             $scholarshipApplication->update($validated);
 
             return redirect()->back()->with('success', 'ข้อมูลถูกอัพเดตเรียบร้อย!');
@@ -237,6 +247,7 @@ class ScholarshipApplicationsController extends Controller
                 ->withErrors(['error' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()]);
         }
     }
+
 
     public function deleteContracts($id)
     {
@@ -258,11 +269,13 @@ class ScholarshipApplicationsController extends Controller
     {
         $scholarships = Scholarship::all();
         $publicInfo = DocumentRequest::where('type', 0)
-            ->whereNotNull('scholar_id') // เพิ่มเงื่อนไขนี้เพื่อตรวจสอบว่า scholar_id ไม่เป็น null  
+            ->whereNotNull('scholar_id') 
             ->orderBy('created_at', 'desc')
             ->get();
         if (auth()->user()->hasRole(['admin', 'officer'])) {
-            $applications = ScholarshipApplication::with('user')->get();
+            $applications = ScholarshipApplication::with('user')
+                ->where('result', 1)
+                ->get();
         } elseif (auth()->user()->hasRole(['student', 'member'])) {
             $applications = ScholarshipApplication::with('user')
                 ->where('user_id', auth()->user()->id)

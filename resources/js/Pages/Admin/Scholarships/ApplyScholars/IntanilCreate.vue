@@ -43,36 +43,61 @@ const errorMessages = ref({
   leader_proof: '',
   gpa_image: '',
 });
-const validateForm = () => {  
+const validateForm = () => {
+  // ล้างข้อความข้อผิดพลาด  
   Object.keys(errorMessages.value).forEach((key) => {
     errorMessages.value[key] = '';
-  }); 
-  const validationFields = [
-    { key: 'type_ability', message: 'กรุณากรอกชื่อประเภทความสามารถ' },
-    { key: 'imagefile', message: 'กรุณาเพิ่มภาพถ่าย 1 นิ้ว' },
-    { key: 'gpa_image', message: 'กรุณากเพิ่มเอกสารแสดงผลการเรียน' },
-    { key: 'portfolio', message: 'กรุณาเพิ่ม portfolio' },
-    { key: 'conduct_cert', message: 'กรุณาเพิ่มเอกสารรับรองความประพฤติ' },
-    { key: 'fam_cert', message: 'กรุณาเพิ่มเอกสารรับรองสถานภาพครอบครัว' },
-    { key: 'award_certs', message: 'กรุณาเพิ่มเอกสารเอกสารรับรองรางวัล' },
-    { key: 'leader_proof', message: 'กรุณาเพิ่มเอกสารรับรองความเป็นผู้นำ' },
-    { key: 'gpax', message: 'กรุณากรอกผลการเรียน ( 5 ภาคเรียนหรือ 6 ภาคเรียน )' },
-  ]; 
-  validationFields.forEach(({ key, message }) => {
-    if (!form[key]) {
-      errorMessages.value[key] = message;
-    }
   });
+
+  // ตรวจสอบประเภทความสามารถ  
+  if (form.type_ability) {
+    if (!form.imagefile) {
+      errorMessages.value.imagefile = 'กรุณาเพิ่มภาพถ่าย 1 นิ้ว';
+    }
+    if (!form.gpa_image) {
+      errorMessages.value.gpa_image = 'กรุณาเพิ่มเอกสารแสดงผลการเรียน';
+    }
+    if (!form.portfolio) {
+      errorMessages.value.portfolio = 'กรุณาเพิ่ม portfolio';
+    }
+    if (!form.conduct_cert) {
+      errorMessages.value.conduct_cert = 'กรุณาเพิ่มเอกสารรับรองความประพฤติ';
+    }
+    // ตรวจสอบเฉพาะประเภทความสามารถที่ตรงตามเงื่อนไข  
+    if (form.type_ability === '2' && !form.fam_cert) {
+      errorMessages.value.fam_cert = 'กรุณาเพิ่มเอกสารรับรองสถานภาพครอบครัว';
+    }
+    if (['3', '4', '5'].includes(form.type_ability) && !form.award_certs) {
+      errorMessages.value.award_certs = 'กรุณาเพิ่มเอกสารรับรองรางวัล';
+    }
+    if (form.type_ability === '6' && !form.leader_proof) {
+      errorMessages.value.leader_proof = 'กรุณาเพิ่มเอกสารรับรองความเป็นผู้นำ';
+    }
+  } else {
+    errorMessages.value.type_ability = 'กรุณาเลือกประเภททุนความสามารถพิเศษ';
+  }
+
+  // ตรวจสอบ GPAX  
+  if (!form.gpax) {
+    errorMessages.value.gpax = 'กรุณากรอกผลการเรียน (5 ภาคเรียนหรือ 6 ภาคเรียน)';
+  }
 };
 const handleFileChange = (event, field) => {
   form[field] = event.target.files[0];
   console.log(`File selected for ${field}:`, form[field]);
 };
 const handleSubmit = () => {
-  validateForm(); 
+  console.log("🔍 เริ่มต้น handleSubmit...");
+
+  // validateForm(); // ตรวจสอบค่าฟอร์ม
+  console.log("✅ validateForm() เรียบร้อย!");
+
+  console.log("📌 Error Messages:", errorMessages.value);
   const hasErrors = Object.values(errorMessages.value).some(message => message !== '');
+  console.log("🔍 มีข้อผิดพลาดไหม?", hasErrors);
 
   if (hasErrors) { 
+    console.warn("❌ พบข้อผิดพลาดในการกรอกฟอร์ม!");
     Swal.fire({
       title: 'เกิดข้อผิดพลาด!',
       text: 'กรุณาตรวจสอบข้อมูลและลองใหม่',
@@ -81,13 +106,16 @@ const handleSubmit = () => {
       confirmButtonColor: '#dc3545',
       timer: 2000,
       timerProgressBar: true,
-      willClose: () => {
-      }
     });
     return;
   } 
+
+  console.log("🚀 กำลังส่งฟอร์มไปที่:", route('scholarship_applications.store'));
+  console.log("📩 ข้อมูลที่ส่ง:", form);
+
   form.post(route('scholarship_applications.store'), {
     onSuccess: () => {
+      console.log("✅ ฟอร์มส่งสำเร็จ!");
       Swal.fire({
         title: 'สำเร็จ!',
         text: 'ส่งฟอร์มเรียบร้อยแล้ว',
@@ -99,6 +127,7 @@ const handleSubmit = () => {
       });
     },
     onError: (errors) => {
+      console.error("❌ เกิดข้อผิดพลาดขณะส่งฟอร์ม:", errors);
       Swal.fire({
         title: 'เกิดข้อผิดพลาด!',
         text: 'กรุณาตรวจสอบข้อมูลและลองใหม่',
@@ -108,10 +137,10 @@ const handleSubmit = () => {
         timer: 2000,
         timerProgressBar: true,
       });
-      console.log('Form submission errors:', errors);
     },
   });
-};  
+};
+
 
 </script>
 

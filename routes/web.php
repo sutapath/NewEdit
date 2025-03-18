@@ -214,13 +214,14 @@ Route::get('/intlScholars/{intlScholar}/edit', [IntlScholarController::class, 'e
 Route::put('/intlScholars/{intlScholar}', [IntlScholarController::class, 'update'])->name('intlScholars.update');
 Route::delete('/intlScholars/{intlScholar}', [IntlScholarController::class, 'destroy'])->name('intlScholars.destroy');
 
+    Route::put('/userupdate/{id}', [UserController::class, 'updateuser'])->name('users.updateuser');
+
     // Route::get('/DashBoard', [ScholarshipApplicationsController::class, 'Dash'])->name('Report.Dash');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 Route::put('/users/update-roles', [UserController::class, 'updateRoles'])->name('users.updateRoles');
-
 });
 
 require __DIR__ . '/auth.php';
