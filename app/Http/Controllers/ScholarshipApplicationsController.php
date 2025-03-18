@@ -219,15 +219,10 @@ class ScholarshipApplicationsController extends Controller
                 'data_id' => 'required|exists:scholarship_applications,id',
                 'scholarship_contract' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             ]);
-
             $scholarshipApplication = ScholarshipApplication::where('id', $request->data_id)->first();
-
-            // กำหนด cancel_status เป็น 4 ถ้าไม่มีค่าจากฟอร์ม
-            $validated['cancel_status'] = $request->has('cancel_status') ? $request->cancel_status : 4;
-
-            // ถ้า cancel_status เป็น 3 ให้กำหนดค่าให้ contract_suggestions เป็นค่าว่าง
+            $validated['cancel_status'] = $request->has('cancel_status') ? $request->cancel_status : 5;
             if ($validated['cancel_status'] == 3) {
-                $validated['contract_suggestions'] = ''; // กำหนดค่าให้ contract_suggestions เป็นค่าว่าง
+                $validated['contract_suggestions'] = '';
             }
 
             // ถ้ามีการอัพโหลดไฟล์ scholarship_contract

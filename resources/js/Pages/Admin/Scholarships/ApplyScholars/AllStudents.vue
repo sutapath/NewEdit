@@ -680,7 +680,7 @@ const confirmCancellation = () => {
                 class="bg-yellow-300 text-gray-900 p-2 athiti-medium rounded-xl">
                 ดำเนินการแก้ไข
               </PrimaryButton>
-              <PrimaryButton v-else-if="application.cancel_status == 4" @click="navigateToAddContract(application.id)"
+              <PrimaryButton v-else-if="application.cancel_status == 5" @click="navigateToAddContract(application.id)"
                 class="bg-gray-100 text-gray-900 p-2 athiti-medium rounded-xl">
                 รอตรวจสอบ
               </PrimaryButton>
