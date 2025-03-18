@@ -127,13 +127,8 @@ const selectBranch = (branch) => {
     form.branch = branch;
     filteredBranches.value = [];
 };
-
-
 const submitForm = () => {
-    // เช็คข้อมูลที่เปลี่ยนแปลงก่อน
-    const hasChanges = form.dirty();  // ตรวจสอบว่ามีการแก้ไขข้อมูลหรือไม่
-
-    if (hasChanges) {
+ 
         // ถ้ามีการเปลี่ยนแปลง ขอยืนยันก่อน
         Swal.fire({
             title: 'คุณแน่ใจหรือไม่?',
@@ -147,7 +142,7 @@ const submitForm = () => {
                 cancelButton: 'bg-gray-500 text-white hover:bg-gray-600',
             },
         }).then((result) => {
-            if (result.isConfirmed) { 
+            if (result.isConfirmed) {
                 form.patch(route('profile.update', { id: user.id }), {
                     onSuccess: () => {
                         Swal.fire({
@@ -174,19 +169,9 @@ const submitForm = () => {
                     },
                 });
             }
-        });
-    } else { 
-        Swal.fire({
-            title: 'ไม่มีการเปลี่ยนแปลง!',
-            text: 'ข้อมูลของคุณไม่มีการเปลี่ยนแปลง',
-            icon: 'info',
-            confirmButtonText: 'ปิด',
-            customClass: {
-                confirmButton: 'bg-yellow-500 text-white hover:bg-yellow-600',
-            },
-        });
-    }
+        }); 
 };
+ 
 </script>
 
 <template>

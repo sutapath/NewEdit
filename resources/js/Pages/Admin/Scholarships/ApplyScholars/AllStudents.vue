@@ -147,7 +147,7 @@ const handleConfirmScores = () => {
     return;
   }
 
-  if (selectedInterviewStatus.value == null) {
+  if (selectedInterviewStatus.value == null || selectedInterviewStatus.value === '') {
     Swal.fire({
       icon: "warning",
       title: "กรุณาเลือกสถานะการสัมภาษณ์ก่อนทำการยืนยัน.",
@@ -155,9 +155,7 @@ const handleConfirmScores = () => {
       confirmButtonColor: "#FF9800",
     });
     return;
-  }
-
-  // แสดง Swal loading เมื่อเริ่มต้นการทำงาน
+  } 
   const loadingSwal = Swal.fire({
     title: "กำลังส่งข้อมูล...",
     text: "โปรดรอซักครู่",
@@ -576,7 +574,7 @@ const confirmCancellation = () => {
               class="block w-full mt-1 text-gray-800 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
           </div>
           <div class="py-1">
-            <label for="interviewStatus" class="block text-sm font-medium text-gray-700">สถาณะ</label>
+            <label for="interviewStatus" class="block text-sm font-medium text-gray-700">สถานะ</label>
             <select id="interviewStatus" v-model="selectedInterviewStatus"
               class="block w-full mt-1 text-gray-800 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
               <option value="">เลือกสถานะ</option>
@@ -597,8 +595,8 @@ const confirmCancellation = () => {
     <div class="max-w-full sm:max-w-7xl mx-auto sm:px-6 lg:px-8 bg-white sm:rounded-xl overflow-x-auto">
       <Table class="whitespace-nowrap">
         <TableRow header>
-          <TableHeaderCell v-if="hasRole('admin') || hasRole('officer')">
-            <input type="checkbox" @change="handleSelectAll" />
+          <TableHeaderCell ห>
+            <!-- <input type="checkbox" @change="handleSelectAll" /> -->
           </TableHeaderCell>
           <TableHeaderCell>ลำดับ</TableHeaderCell>
           <TableHeaderCell>ผลการสัมภาษณ์</TableHeaderCell>
@@ -612,8 +610,8 @@ const confirmCancellation = () => {
 
         <TableRow v-for="(application, index) in filteredApplications" :key="application.id">
           <TableDataCell v-if="hasRole('admin') || hasRole('officer')">
-            <input type="checkbox" @change="handleSelectAll"
-              v-if="(hasRole('admin') || hasRole('officer')) && application.cancel_status == 1" />
+            <input type="checkbox" @change="handleSelect(application.id)"
+              v-if="hasRole('admin') || hasRole('officer')"/>
 
           </TableDataCell>
           <TableDataCell>{{ index + 1 }}</TableDataCell>
@@ -659,7 +657,7 @@ const confirmCancellation = () => {
                 @click="showDocument(application)">
                 ดำเนินการแก้ไข
               </PrimaryButton>
-              <PrimaryButton v-else-if="application.cancel_status == 4" class="custom-button-disabled"
+              <PrimaryButton v-else-if="application.cancel_status == 5" class="custom-button-disabled"
                 @click="showDocument(application)">
                 รอตรวจสอบ
               </PrimaryButton>

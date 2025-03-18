@@ -76,7 +76,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 Route::put('/users/update-roles', [UserController::class, 'updateRoles'])->name('users.updateRoles');
@@ -214,7 +215,6 @@ Route::get('/intlScholars/{intlScholar}/edit', [IntlScholarController::class, 'e
 Route::put('/intlScholars/{intlScholar}', [IntlScholarController::class, 'update'])->name('intlScholars.update');
 Route::delete('/intlScholars/{intlScholar}', [IntlScholarController::class, 'destroy'])->name('intlScholars.destroy');
 
-    Route::put('/userupdate/{id}', [UserController::class, 'updateuser'])->name('users.updateuser');
 
     // Route::get('/DashBoard', [ScholarshipApplicationsController::class, 'Dash'])->name('Report.Dash');
 });
