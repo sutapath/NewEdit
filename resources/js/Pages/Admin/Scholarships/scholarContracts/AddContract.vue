@@ -2,7 +2,7 @@
   <AuthenticatedLayout>
     <div class="max-w-7xl mx-auto py-4 mt-20 px-10">
       <div class="px-4 text-white dark:text-gray-100 flex justify-between items-center">
-        <div class="py-2 text-gray-800 rounded-t-lg text-xl font-bold">บันทึกกิจกรรม</div>
+        <div class="py-2 text-gray-800 rounded-t-lg text-xl font-bold">เอกสารลงนามทุนการศึกษา</div>
         <div class="flex-1 mr-3 ml-3">
           <hr class="border-t border-gray-300" />
         </div>
@@ -72,7 +72,7 @@
           <div v-else>
             <span class="text-red-500">ไม่มีไฟล์</span>
           </div>
-          <div v-if="props.application?.scholarship_contract" class="mt-4">
+          <div class="mt-4">
             <PrimaryButton class="custom-button-primary mr-3" :href="exampleDocumentLink" target="_blank">
               ดูตัวอย่างเอกสาร
             </PrimaryButton>
@@ -80,7 +80,7 @@
               ดาวน์โหลดเอกสาร
             </PrimaryButton>
             <button
-              v-if="props.application?.cancel_status != 4 && props.application?.cancel_status != 3 && props.application?.cancel_status != 1 && props.application?.cancel_status != 0"
+              v-if="props.application?.cancel_status != 4 && props.application?.cancel_status != 3 && props.application?.cancel_status != 1 && props.application?.cancel_status != 0 && props.application?.cancel_status"
               @click="handleDelete" class="custom-button-danger">ลบไฟล์</button>
 
           </div>

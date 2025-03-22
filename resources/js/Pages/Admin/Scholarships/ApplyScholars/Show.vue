@@ -352,11 +352,7 @@ const { hasRole, hasPermission } = usePermission();
 const props = defineProps({
   application: Object
 });
- 
-// Define a reactive variable to control the modal visibility
 const isModalVisible = ref(false);
-
-// Method to toggle modal visibility
 const showModal = () => {
   isModalVisible.value = true;
 };

@@ -116,7 +116,7 @@ const currentPage = ref(1);
 const perPage = ref(10); 
 const totalItems = ref(0); 
 
-const filteredUsers = computed(() => {
+const filteredUsers = computed(() => { 
   let results = props.users; 
   if (selectedRole.value) {
     results = results.filter((user) =>
@@ -130,16 +130,16 @@ const filteredUsers = computed(() => {
       return (
         fullName.includes(query) ||
         user.name.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query)
+        (user.email && user.email.toLowerCase().includes(query)) 
       );
     });
   }
 
   totalItems.value = results.length; 
-  const start = (currentPage.value - 1) * perPage.value;
-  const end = start + perPage.value; 
-  return results.slice(start, end);
-});
+  const start = (currentPage.value - 1) * perPage.value; 
+  const end = start + perPage.value;  
+  return results.slice(start, end);   
+});  
 // Debounce the search function  
 const updateFilteredUsers = debounce(() => {
   totalItems.value = filteredUsers.value.length;
@@ -172,17 +172,20 @@ const totalPages = computed(() => {
           <hr class="border-t border-gray-300" />
         </div>
         <div class="flex items-center space-x-4 sm:space-x-6 mt-3 sm:mt-0">
-          <select v-model="selectedRole"
-            class="px-3 py-2 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 sm:w-48">
-            <option value="">ทั้งหมด</option>
-            <option v-for="role in roles" :key="role.value" :value="role.value">
-              {{ role.label }}
-            </option>
-          </select>
+          <div class="flex items-center space-x-4 sm:space-x-6 mt-3 sm:mt-0">
+            <div class="flex items-center space-x-4 sm:space-x-6 mt-3 sm:mt-0">
+              <select v-model="selectedRole"
+                class="px-3 py-2 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 sm:w-48">
+                <option value="">ทั้งหมด</option>
+                <option v-for="role in roles" :key="role.value" :value="role.value">
+                  {{ role.label }}
+                </option>
+              </select>
 
-          <input v-model="searchQuery" type="text" placeholder="ค้นหาผู้ใช้..."
-            class="px-3 py-2 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 sm:w-48" />
-
+              <input v-model="searchQuery" type="text" placeholder="ค้นหาผู้ใช้..."
+                class="px-3 py-2 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 sm:w-48" />
+            </div>
+          </div>
         </div>
 
         <!-- Action Buttons -->
@@ -235,7 +238,7 @@ const totalPages = computed(() => {
             </TableDataCell>
             <TableDataCell class="whitespace-nowrap">{{ user.name }}</TableDataCell>
             <TableDataCell class="whitespace-nowrap">
-            <pre>{{user.officer_code}}</pre>
+              <pre>{{user.officer_code}}</pre>
               <!-- {{ user.student_code ?? user.officer_code ?? '-' }} -->
               {{ user.id_card || '-' }}
             </TableDataCell>

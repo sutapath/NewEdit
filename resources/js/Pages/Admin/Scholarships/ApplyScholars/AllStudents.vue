@@ -384,13 +384,13 @@ const approveCancellation = (application) => {
     confirmButtonColor: "#28a745",
     cancelButtonColor: "#dc3545",
   }).then((result) => {
-    let cancelStatus = "1";
+    let cancelStatus = '1';
     let cancelDate = "";
     let cancelBy = "";
-    let reason = "";
+    let reason = "ไม่อนุม้ติการขอยกเลิก";
 
     if (result.isConfirmed) {
-      cancelStatus = "0";
+      cancelStatus = '0';
       const currentDate = new Date();
       currentDate.setHours(0, 0, 0, 0);
       cancelDate = currentDate.toISOString().split("T")[0];
@@ -404,7 +404,7 @@ const approveCancellation = (application) => {
       cancel_by: cancelBy,
     }; 
     const roleData =
-      formData.cancel_status == "0"
+      formData.cancel_status == '0'
         ? [
           props.application.scholar_type == "0"
             ? { id: 5, name: "member" }
@@ -611,7 +611,7 @@ const confirmCancellation = () => {
         <TableRow v-for="(application, index) in filteredApplications" :key="application.id">
           <TableDataCell v-if="hasRole('admin') || hasRole('officer')">
             <input type="checkbox" @change="handleSelect(application.id)"
-              v-if="hasRole('admin') || hasRole('officer')"/>
+              v-if="hasRole('admin') || hasRole('officer')" />
 
           </TableDataCell>
           <TableDataCell>{{ index + 1 }}</TableDataCell>
@@ -678,10 +678,11 @@ const confirmCancellation = () => {
                 class="bg-yellow-300 text-gray-900 p-2 athiti-medium rounded-xl">
                 ดำเนินการแก้ไข
               </PrimaryButton>
-              <PrimaryButton v-else-if="application.cancel_status == 5" @click="navigateToAddContract(application.id)"
+              <PrimaryButton v-else-if="application.cancel_status == 4" @click="navigateToAddContract(application.id)"
                 class="bg-gray-100 text-gray-900 p-2 athiti-medium rounded-xl">
                 รอตรวจสอบ
               </PrimaryButton>
+
               <PrimaryButton v-else class="bg-yellow-300 text-gray-900 p-2 athiti-medium rounded-xl"
                 @click="navigateToAddContract(application.id)">
 
@@ -690,7 +691,8 @@ const confirmCancellation = () => {
               <!-- <PrimaryButton v-if="application && application.scholarship_contract && application.cancel_status != 0"
                 @click="navigateToAddContract(application.id)" class="bg-blue-500 py-1 mx-2 text-white rounded-xl px-2">
                 ดู
-              </PrimaryButton> -->
+              </PrimaryButton> --> 
+
             </div>
 
           </TableDataCell>
@@ -700,16 +702,18 @@ const confirmCancellation = () => {
           </TableDataCell>
 
           <TableDataCell>
+            <!-- {{ application.cancel_status }} -->
             <PrimaryButton v-if="application.cancel_status == 4 && (hasRole('admin') || hasRole('officer'))"
-              class="custom-button-warning" @click="approveCancellation(application)">
+              class="custom-button-warning text-xs px-1 py-0.5" @click="approveCancellation(application)">
               หมายเหตุ
             </PrimaryButton>
-            <div v-if="hasRole('student') || hasRole('member') || hasRole('scholar')">
 
-              <div class="text-gray-800 font-semibold">{{ application.cancel_by }}</div>
-              <div class="text-gray-500">{{ application.cancel_date }}</div>
-              <div class="text-red-500">{{ application.cancellation_reason }}</div>
-            </div>
+            <!-- <div v-if="hasRole('student') || hasRole('member') || hasRole('scholar')"> -->
+
+            <div class="text-gray-800 font-semibold">{{ application.cancel_by }}</div>
+            <div class="text-gray-500">{{ application.cancel_date }}</div>
+            <div class="text-red-500">{{ application.cancellation_reason }}</div>
+            <!-- </div> -->
           </TableDataCell>
         </TableRow>
       </Table>

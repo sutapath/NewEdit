@@ -101,7 +101,7 @@ watch([selectedScholarship, selectedYear], () => {
               จำนวนชั่วโมงขั้นต่ำ</TableHeaderCell>
             <TableHeaderCell
               class="px-6 py-3 text-left text-md font-medium text-white uppercase text-center tracking-wider">
-              จำนวนชั่วโมงสะสม</TableHeaderCell>
+              จำนวนชั่วโมงรวม</TableHeaderCell>
             <TableHeaderCell v-if="hasRole('admin') || hasRole('officer')"
               class="px-6 py-3 text-left text-md font-medium text-white uppercase tracking-wider">เพิ่มเติม
             </TableHeaderCell>
@@ -127,9 +127,9 @@ watch([selectedScholarship, selectedYear], () => {
                 <span v-else>ทุนสำหรับนักศึกษาต่างชาติ</span>
               </TableDataCell>
               <TableDataCell class="px-6 py-4 text-center whitespace-nowrap text-md text-gray-800">{{ activity.min_hours
-                }}
+                }} / ปีการศึกษา
               </TableDataCell>
-              <TableDataCell class="px-6 py-4 text-center whitespace-nowrap text-md">{{ activity.total_hours }} / ปีการศึกษา
+              <TableDataCell class="px-6 py-4 text-center whitespace-nowrap text-md">{{ activity.total_hours }}
               </TableDataCell>
               <TableDataCell class="px-6 py-4 whitespace-nowrap text-md text-gray-800"
                 v-if="hasRole('admin') || hasRole('officer')">
